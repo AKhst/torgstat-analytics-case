@@ -1,0 +1,10 @@
+# Obsidian
+.obsidian/
+.obsidian/**
+
+# Вспомогательные скрытые файлы macOS
+.DS_Store
+
+# Опционально — корзина Obsidian и временные файлы
+.trash/
+*.tmp
