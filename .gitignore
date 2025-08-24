@@ -59,3 +59,8 @@ dbt_logs/
 # Database
 *.db
 *.sqlite
+
+# Description files
+Data_description
+
+# System files
