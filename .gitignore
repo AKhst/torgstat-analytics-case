@@ -8,3 +8,7 @@
 # Опционально — корзина Obsidian и временные файлы
 .trash/
 *.tmp
+
+# JetBrains IDEs
+.idea/
+**/.idea/
