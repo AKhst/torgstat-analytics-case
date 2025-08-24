@@ -1,0 +1,215 @@
+{
+  "main": {
+    "id": "9431d32b53cad315",
+    "type": "split",
+    "children": [
+      {
+        "id": "129dff55c7fbee25",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "455b5eb8c8fa37ec",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Torgstat case/1. Описание.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "1. Описание"
+            }
+          },
+          {
+            "id": "b5be31a1294bf767",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Torgstat case/1.1 Структура проекта_ТЗ.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "1.1 Структура проекта_ТЗ"
+            }
+          }
+        ],
+        "currentTab": 1
+      },
+      {
+        "id": "ebbee0bb1024412f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2902c413222bcc9b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Torgstat case/1. Описание.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "1. Описание"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f261387fac5323db",
+    "type": "split",
+    "children": [
+      {
+        "id": "55f4006efbb7d143",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2219a4afcf74b757",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Файловый менеджер"
+            }
+          },
+          {
+            "id": "2f6eaf5836472195",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Поиск"
+            }
+          },
+          {
+            "id": "72cbad93364cd692",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Закладки"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "d6ae7d681a8ebb30",
+    "type": "split",
+    "children": [
+      {
+        "id": "143b6756f8a377fa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c58f0cd6d30c0f57",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Структура проекта.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Обратные ссылки для Структура проекта"
+            }
+          },
+          {
+            "id": "56c2d059850900e2",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Структура проекта.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Исходящие ссылки из Структура проекта"
+            }
+          },
+          {
+            "id": "0f602f9449bc5d5b",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Теги"
+            }
+          },
+          {
+            "id": "70422935a2760600",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Структура проекта.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Структура Структура проекта"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "bases:Создать новую базу": false,
+      "switcher:Меню быстрого перехода": false,
+      "graph:Граф": false,
+      "canvas:Создать новый холст": false,
+      "daily-notes:Сегодняшняя заметка": false,
+      "templates:Вставить шаблон": false,
+      "command-palette:Открыть палитру команд": false
+    }
+  },
+  "active": "b5be31a1294bf767",
+  "lastOpenFiles": [
+    "Torgstat case/1. Описание.md",
+    "Torgstat case/1.1 Структура проекта_ТЗ.md",
+    "Torgstat case/1.1.1 Создание БД и доступ к БД через PGadmin через Docker контейнер.md",
+    "Torgstat case",
+    "создайте ссылку.md"
+  ]
+}
