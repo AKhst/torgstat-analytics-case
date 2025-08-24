@@ -12,3 +12,50 @@
 # JetBrains IDEs
 .idea/
 **/.idea/
+.vscode/
+**/.vscode/ 
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# DBT
+target/
+dbt_packages/
+logs/
+dbt_logs/
+
+# Environment variables
+.env
+.venv
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Database
+*.db
+*.sqlite
