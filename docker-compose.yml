@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: torgstat_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: torguser
+      POSTGRES_PASSWORD: torgpass
+      POSTGRES_DB: torgdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
