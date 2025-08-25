@@ -64,4 +64,4 @@ dbt_logs/
 Data_description
 
 # System files
-postgres_data/
+postgres_data

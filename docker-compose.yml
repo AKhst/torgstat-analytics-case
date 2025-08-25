@@ -6,11 +6,11 @@ services:
     container_name: torgstat_postgres
     restart: always
     environment:
-      POSTGRES_USER: torguser
-      POSTGRES_PASSWORD: torgpass
-      POSTGRES_DB: torgdb
+      POSTGRES_USER: ${POSTGRES_USER} 
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
