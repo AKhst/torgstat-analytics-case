@@ -63,5 +63,8 @@ dbt_logs/
 # Description files
 Data_description
 
+# Init files
+init
+
 # System files
 postgres_data
