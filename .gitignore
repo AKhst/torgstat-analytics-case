@@ -68,3 +68,6 @@ init/
 
 # System files
 postgres_data
+
+# Data
+data/
