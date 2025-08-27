@@ -71,3 +71,8 @@ postgres_data
 
 # Data
 data/
+
+*.csv
+*.xlsx
+/data/
+# etc
