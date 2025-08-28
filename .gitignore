@@ -75,4 +75,6 @@ data/
 *.csv
 *.xlsx
 /data/
-# etc
+
+# Scripts
+scripts/
