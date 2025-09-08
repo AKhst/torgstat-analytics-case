@@ -49,7 +49,15 @@
    cd torgstat-analytics-case
 2. Поднять PostgreSQL через Docker Compose:
    docker-compose up -d
+3. Проверить все ли корректно и готово к подключению к базе
+   запуск скрипта 
+   /Users/admin/torgstat-analytics-case/check_postgres.sh
 3. Данные автоматически загрузятся из init/ и будут доступны в схеме analytics.
 4. Проверить подключение:
    psql -h localhost -U appuser -d torgdb
    Password:  # вводишь пароль для appuser
+5. Загрузить сырые данные (CSV) в PostgreSQL через скрипт load_data.py или Jupyter Notebook.
+6. Создать staging-трансформации (01_staging.ipynb) → таблицы stg_*.
+7. Построить marts (02_marts.ipynb) → таблицы dim_* и fact_*.
+8. Проверить связи и ключевые метрики через SQL в Jupyter.
+9. Подключить Power BI / Superset к схеме analytics и строить дашборды.
