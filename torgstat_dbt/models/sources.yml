@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: raw_data          # Та схема, куда качает наш Python-скрипт generate_data
+    database: torgdb        # Реальное имя базы
+    schema: analytics       # Реальная схема
+    tables:
+      - name: users
+      - name: plans
+      - name: sessions
+      - name: subscriptions
+      - name: invoices
+      - name: events
