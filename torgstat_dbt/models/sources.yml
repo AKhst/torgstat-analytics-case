@@ -1,13 +1,113 @@
 version: 2
 
 sources:
-  - name: raw_data          # Та схема, куда качает наш Python-скрипт generate_data
-    database: torgdb        # Реальное имя базы
-    schema: raw       # Реальная схема
+  - name: raw_data
+    description: Immutable-per-load B2B SaaS extracts loaded from validated CSV files.
+    database: "{{ env_var('POSTGRES_DB', 'torgdb') }}"
+    schema: "{{ env_var('RAW_SCHEMA', 'raw') }}"
+    config:
+      loaded_at_field: _loaded_at_utc
+      freshness:
+        warn_after: {count: 24, period: hour}
+        error_after: {count: 168, period: hour}
     tables:
-      - name: users
       - name: plans
+        description: Subscription plan reference data.
+        columns:
+          - name: plan_id
+            data_tests: [not_null, unique]
+          - name: plan_name
+            data_tests: [not_null]
+          - name: _load_batch_id
+            data_tests: [not_null]
+          - name: _loaded_at_utc
+            data_tests: [not_null]
+
+      - name: users
+        description: Users associated with B2B workspaces.
+        columns:
+          - name: user_id
+            data_tests: [not_null, unique]
+          - name: workspace_id
+            data_tests: [not_null]
+          - name: _load_batch_id
+            data_tests: [not_null]
+          - name: _loaded_at_utc
+            data_tests: [not_null]
+
       - name: sessions
+        description: User acquisition sessions and UTM attribution.
+        columns:
+          - name: session_id
+            data_tests: [not_null, unique]
+          - name: user_id
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('raw_data', 'users')
+                    field: user_id
+          - name: _load_batch_id
+            data_tests: [not_null]
+          - name: _loaded_at_utc
+            data_tests: [not_null]
+
       - name: subscriptions
+        description: Subscriptions at workspace and source-subscription grain.
+        data_tests:
+          - unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [workspace_id, subscription_id]
+        columns:
+          - name: subscription_id
+            data_tests: [not_null]
+          - name: workspace_id
+            data_tests: [not_null]
+          - name: plan_id
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('raw_data', 'plans')
+                    field: plan_id
+          - name: _load_batch_id
+            data_tests: [not_null]
+          - name: _loaded_at_utc
+            data_tests: [not_null]
+
       - name: invoices
+        description: Invoices at workspace and source-invoice grain with injected quality issues.
+        data_tests:
+          - unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [workspace_id, invoice_id]
+        columns:
+          - name: invoice_id
+            data_tests: [not_null]
+          - name: subscription_id
+            data_tests: [not_null]
+          - name: workspace_id
+            data_tests: [not_null]
+          - name: plan_id
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('raw_data', 'plans')
+                    field: plan_id
+          - name: _load_batch_id
+            data_tests: [not_null]
+          - name: _loaded_at_utc
+            data_tests: [not_null]
+
       - name: events
+        description: Product events recorded at workspace grain without a source event ID.
+        columns:
+          - name: workspace_id
+            data_tests: [not_null]
+          - name: event_date
+            data_tests: [not_null]
+          - name: _load_batch_id
+            data_tests: [not_null]
+          - name: _loaded_at_utc
+            data_tests: [not_null]

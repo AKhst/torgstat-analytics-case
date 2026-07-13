@@ -1,0 +1,167 @@
+version: 2
+
+models:
+  - name: stg_plans
+    description: Typed plan reference data with stable keys and load lineage.
+    config:
+      contract: {enforced: true}
+    columns:
+      - {name: plan_key, data_type: text, data_tests: [not_null, unique]}
+      - {name: plan_id, data_type: integer, data_tests: [not_null, unique]}
+      - {name: plan_name, data_type: text, data_tests: [not_null]}
+      - name: billing_period
+        data_type: text
+        data_tests:
+          - accepted_values:
+              arguments: {values: [monthly, annual]}
+      - {name: price, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: is_negative_price, data_type: boolean, data_tests: [not_null]}
+      - {name: is_invalid_billing_period, data_type: boolean, data_tests: [not_null]}
+      - {name: source_file_name, data_type: text, data_tests: [not_null]}
+      - {name: source_row_number, data_type: bigint, data_tests: [not_null]}
+      - {name: load_batch_id, data_type: text, data_tests: [not_null]}
+      - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
+
+  - name: stg_users
+    description: Users at workspace and user grain with consent, lifecycle, and source-quality flags.
+    config:
+      contract: {enforced: true}
+    columns:
+      - {name: user_key, data_type: text, data_tests: [not_null, unique]}
+      - {name: user_id, data_type: bigint, data_tests: [not_null, unique]}
+      - {name: workspace_id, data_type: text, data_tests: [not_null]}
+      - {name: signup_date, data_type: date}
+      - {name: country_code, data_type: text, data_tests: [not_null]}
+      - {name: has_gdpr_consent, data_type: boolean, data_tests: [not_null]}
+      - {name: is_deleted, data_type: boolean, data_tests: [not_null]}
+      - {name: is_missing_signup_date, data_type: boolean, data_tests: [not_null]}
+      - {name: is_invalid_signup_date, data_type: boolean, data_tests: [not_null]}
+      - {name: is_missing_country, data_type: boolean, data_tests: [not_null]}
+      - {name: signup_date_raw, data_type: text}
+      - {name: source_file_name, data_type: text, data_tests: [not_null]}
+      - {name: source_row_number, data_type: bigint, data_tests: [not_null]}
+      - {name: load_batch_id, data_type: text, data_tests: [not_null]}
+      - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
+
+  - name: stg_sessions
+    description: Acquisition sessions at session grain with normalized attribution fields.
+    config:
+      contract: {enforced: true}
+    columns:
+      - {name: session_key, data_type: text, data_tests: [not_null, unique]}
+      - {name: session_id, data_type: text, data_tests: [not_null, unique]}
+      - name: user_id
+        data_type: bigint
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: "ref('stg_users')", field: user_id}
+      - {name: session_date, data_type: date, data_tests: [not_null]}
+      - {name: utm_source, data_type: text}
+      - {name: utm_medium, data_type: text}
+      - {name: is_first_session, data_type: boolean, data_tests: [not_null]}
+      - {name: is_missing_utm_source, data_type: boolean, data_tests: [not_null]}
+      - {name: source_file_name, data_type: text, data_tests: [not_null]}
+      - {name: source_row_number, data_type: bigint, data_tests: [not_null]}
+      - {name: load_batch_id, data_type: text, data_tests: [not_null]}
+      - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
+
+  - name: stg_subscriptions
+    description: Workspace subscriptions with composite business keys and explicit source-quality flags.
+    config:
+      contract: {enforced: true}
+    data_tests:
+      - unique_combination_of_columns:
+          arguments: {combination_of_columns: [workspace_id, subscription_id]}
+    columns:
+      - {name: subscription_key, data_type: text, data_tests: [not_null, unique]}
+      - {name: subscription_id, data_type: bigint, data_tests: [not_null]}
+      - {name: workspace_id, data_type: text, data_tests: [not_null]}
+      - name: plan_id
+        data_type: integer
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: "ref('stg_plans')", field: plan_id}
+      - {name: start_date, data_type: date, data_tests: [not_null]}
+      - name: subscription_status
+        data_type: text
+        data_tests:
+          - accepted_values:
+              arguments: {values: [active, churned, unknown]}
+      - {name: subscription_key_record_count, data_type: bigint, data_tests: [not_null]}
+      - {name: subscription_id_record_count, data_type: bigint, data_tests: [not_null]}
+      - {name: is_duplicate_subscription_key, data_type: boolean, data_tests: [not_null]}
+      - {name: is_reused_id_across_workspaces, data_type: boolean, data_tests: [not_null]}
+      - {name: is_missing_subscription_status, data_type: boolean, data_tests: [not_null]}
+      - {name: subscription_status_raw, data_type: text}
+      - {name: source_file_name, data_type: text, data_tests: [not_null]}
+      - {name: source_row_number, data_type: bigint, data_tests: [not_null]}
+      - {name: load_batch_id, data_type: text, data_tests: [not_null]}
+      - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
+
+  - name: stg_invoices
+    description: Workspace invoices with composite keys, financial controls, and load lineage.
+    config:
+      contract: {enforced: true}
+    data_tests:
+      - unique_combination_of_columns:
+          arguments: {combination_of_columns: [workspace_id, invoice_id]}
+    columns:
+      - {name: invoice_key, data_type: text, data_tests: [not_null, unique]}
+      - name: subscription_key
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: "ref('stg_subscriptions')", field: subscription_key}
+      - {name: invoice_id, data_type: bigint, data_tests: [not_null]}
+      - {name: subscription_id, data_type: bigint, data_tests: [not_null]}
+      - {name: workspace_id, data_type: text, data_tests: [not_null]}
+      - {name: plan_id, data_type: integer, data_tests: [not_null]}
+      - {name: period_start, data_type: date, data_tests: [not_null]}
+      - {name: period_end, data_type: date, data_tests: [not_null]}
+      - name: currency_code
+        data_type: text
+        data_tests:
+          - accepted_values:
+              arguments: {values: [EUR, GBP, USD, UNKNOWN]}
+      - {name: net_amount, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: tax_amount, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: gross_amount, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: is_paid, data_type: boolean, data_tests: [not_null]}
+      - {name: invoice_key_record_count, data_type: bigint, data_tests: [not_null]}
+      - {name: invoice_id_record_count, data_type: bigint, data_tests: [not_null]}
+      - {name: is_duplicate_invoice_key, data_type: boolean, data_tests: [not_null]}
+      - {name: is_reused_id_across_workspaces, data_type: boolean, data_tests: [not_null]}
+      - {name: is_missing_currency, data_type: boolean, data_tests: [not_null]}
+      - {name: is_negative_gross_amount, data_type: boolean, data_tests: [not_null]}
+      - {name: has_amount_mismatch, data_type: boolean, data_tests: [not_null]}
+      - {name: is_invalid_billing_period, data_type: boolean, data_tests: [not_null]}
+      - {name: source_file_name, data_type: text, data_tests: [not_null]}
+      - {name: source_row_number, data_type: bigint, data_tests: [not_null]}
+      - {name: load_batch_id, data_type: text, data_tests: [not_null]}
+      - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
+
+  - name: stg_events
+    description: Workspace events with deterministic occurrence keys for duplicate payloads.
+    config:
+      contract: {enforced: true}
+    columns:
+      - {name: event_key, data_type: text, data_tests: [not_null, unique]}
+      - {name: workspace_id, data_type: text, data_tests: [not_null]}
+      - {name: event_date, data_type: date, data_tests: [not_null]}
+      - name: event_name
+        data_type: text
+        data_tests:
+          - accepted_values:
+              arguments: {values: [dashboard_viewed, export_limit_reached, login]}
+      - {name: event_properties_json, data_type: text}
+      - {name: event_occurrence_number, data_type: bigint, data_tests: [not_null]}
+      - {name: event_record_count, data_type: bigint, data_tests: [not_null]}
+      - {name: is_duplicate_event_payload, data_type: boolean, data_tests: [not_null]}
+      - {name: is_missing_event_properties, data_type: boolean, data_tests: [not_null]}
+      - {name: source_file_name, data_type: text, data_tests: [not_null]}
+      - {name: source_row_number, data_type: bigint, data_tests: [not_null]}
+      - {name: load_batch_id, data_type: text, data_tests: [not_null]}
+      - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}

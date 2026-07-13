@@ -2,10 +2,8 @@ name: 'torgstat_dbt'
 version: '1.0.0'
 config-version: 2
 
-# Это имя профиля, которое dbt ищет в ~/.dbt/profiles.yml
 profile: 'torgstat_dbt'
 
-# Папки, где лежит код
 model-paths: ["models"]
 seed-paths: ["seeds"]
 test-paths: ["tests"]
@@ -18,13 +16,17 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
-# Настройки материализации (как сохранять таблицы)
 models:
   torgstat_dbt:
+    +persist_docs:
+      relation: true
+      columns: true
     staging:
       +materialized: view
-      +schema: staging
+      +schema: "{{ env_var('STAGING_SCHEMA', 'staging') }}"
+      +tags: ['staging']
     marts:
       +materialized: table
-      +schema: marts
-      
+      +schema: "{{ env_var('MARTS_SCHEMA', 'marts') }}"
+      +tags: ['marts']
+      +post-hook: "{{ grant_select_to_readonly() }}"

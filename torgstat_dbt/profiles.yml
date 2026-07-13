@@ -1,0 +1,12 @@
+torgstat_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
+      port: "{{ env_var('POSTGRES_PORT', '5433') | int }}"
+      user: "{{ env_var('APP_DB_USER', 'appuser') }}"
+      password: "{{ env_var('APP_DB_PASSWORD') }}"
+      dbname: "{{ env_var('POSTGRES_DB', 'torgdb') }}"
+      schema: "{{ env_var('STAGING_SCHEMA', 'staging') }}"
+      threads: 4
