@@ -165,3 +165,18 @@ models:
       - {name: source_row_number, data_type: bigint, data_tests: [not_null]}
       - {name: load_batch_id, data_type: text, data_tests: [not_null]}
       - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
+
+  - name: stg_fx_rates
+    description: Daily FX rates used for multi-currency reporting.
+    config:
+      contract: {enforced: true}
+    columns:
+      - {name: fx_rate_key, data_type: text, data_tests: [not_null, unique]}
+      - {name: rate_date, data_type: date, data_tests: [not_null]}
+      - {name: base_currency, data_type: text, data_tests: [not_null]}
+      - {name: quote_currency, data_type: text, data_tests: [not_null]}
+      - {name: rate, data_type: "numeric(14,6)", data_tests: [not_null]}
+      - {name: source_file_name, data_type: text, data_tests: [not_null]}
+      - {name: source_row_number, data_type: bigint, data_tests: [not_null]}
+      - {name: load_batch_id, data_type: text, data_tests: [not_null]}
+      - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}

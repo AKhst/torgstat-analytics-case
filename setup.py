@@ -5,21 +5,21 @@
 который предназначен для работы с торговой статистикой и базами данных.
 
 Attributes:
-    name (str): Название пакета - 'torgstat'
-    version (str): Версия пакета - 0.1
-    packages (list): Список пакетов, найденных в директории 'src'
-    package_dir (dict): Соответствие между именами пакетов и директориями
-    install_requires (list): Список зависимостей для установки
+    name (str): Package name - 'torgstat'
+    version (str): Package version - 0.1
+    packages (list): List of packages discovered under 'src'
+    package_dir (dict): Mapping between package names and directories
+    install_requires (list): Install dependencies
 
-Зависимости:
-    - sqlalchemy: ORM для работы с базами данных
-    - python-dotenv: Загрузка переменных окружения из .env файлов
-    - psycopg2-binary: Адаптер PostgreSQL для Python
-    - pandas: Библиотека для анализа данных и работы с таблицами
+Dependencies:
+    - sqlalchemy: ORM for database work
+    - python-dotenv: Load environment variables from .env files
+    - psycopg2-binary: PostgreSQL adapter for Python
+    - pandas: Data analysis and tabular processing library
 
-Структура проекта:
-    Проект использует структуру с исходным кодом в директории 'src/',
-    что является рекомендуемой практикой для Python проектов.
+Project structure:
+    The project uses a source-layout structure under 'src/',
+    which is a recommended practice for Python projects.
 """
 from setuptools import setup, find_packages
 

@@ -3,17 +3,17 @@ set -e
 
 echo "[INIT] Starting schema initialization..."
 
-# Используем переменные окружения, проброшенные через docker-compose
-# Убедитесь, что POSTGRES_USER, APP_DB_USER, APP_DB_PASSWORD и другие
-# доступны в окружении контейнера.
+# Use environment variables passed through docker-compose
+# Ensure POSTGRES_USER, APP_DB_USER, APP_DB_PASSWORD, and others
+# are available in the container environment.
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<EOF
-    -- 1. Создание схем
+    -- 1. Create schemas
     CREATE SCHEMA IF NOT EXISTS ${RAW_SCHEMA} AUTHORIZATION ${POSTGRES_USER};
     CREATE SCHEMA IF NOT EXISTS ${STAGING_SCHEMA} AUTHORIZATION ${POSTGRES_USER};
     CREATE SCHEMA IF NOT EXISTS ${MARTS_SCHEMA} AUTHORIZATION ${POSTGRES_USER};
 
-    -- 2. Настройка пользователя ETL (dbt/python)
+    -- 2. Configure ETL user (dbt/python)
     DO \$\$
     BEGIN
         IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '${APP_DB_USER}') THEN
@@ -32,7 +32,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<EO
     GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${STAGING_SCHEMA} TO ${APP_DB_USER};
     GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${MARTS_SCHEMA} TO ${APP_DB_USER};
 
-    -- 3. Настройка пользователя для BI (Read-Only)
+    -- 3. Configure BI user (read-only)
     DO \$\$
     BEGIN
         IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '${READONLY_USER}') THEN

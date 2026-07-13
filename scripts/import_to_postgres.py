@@ -64,6 +64,7 @@ FILE_SCHEMAS = {
         "paid",
     ],
     "events.csv": ["workspace_id", "event_date", "event_name", "properties"],
+    "fx_rates.csv": ["rate_date", "base_currency", "quote_currency", "rate"],
 }
 
 IDENTIFIER_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")

@@ -111,3 +111,15 @@ sources:
             data_tests: [not_null]
           - name: _loaded_at_utc
             data_tests: [not_null]
+
+      - name: fx_rates
+        description: Daily exchange-rate reference data used for multi-currency reporting.
+        columns:
+          - name: rate_date
+            data_tests: [not_null]
+          - name: base_currency
+            data_tests: [not_null]
+          - name: quote_currency
+            data_tests: [not_null]
+          - name: rate
+            data_tests: [not_null]

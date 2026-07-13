@@ -12,7 +12,7 @@ DB_NAME = os.getenv("POSTGRES_DB")
 DB_SCHEMA = os.getenv("POSTGRES_SCHEMA", os.getenv("RAW_SCHEMA", "raw"))
 
 if not all([DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME]):
-    raise ValueError("Не все необходимые переменные окружения установлены.")
+    raise ValueError("Not all required environment variables are set.")
 
 def get_engine():
     return create_engine(

@@ -5,11 +5,11 @@ import random
 import datetime
 import json
 
-# Фиксируем seed для воспроизводимости датасета
+# Fix the seed for deterministic dataset generation
 random.seed(42)
 np.random.seed(42)
 
-# Определяем пути
+# Define paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -31,9 +31,9 @@ num_users = 2500
 users = []
 for i in range(num_users):
     ws = random.choice(workspaces)
-    # Создаем намеренно грязные даты для тестирования Data Quality
+    # Create intentionally dirty dates to test Data Quality
     if random.random() < 0.1:
-        signup_date = "2023/13/45" # Невалидная дата
+        signup_date = "2023/13/45" # Invalid date
     else:
         days = random.randint(0, 500)
         signup_date = start_date + datetime.timedelta(days=days)
@@ -53,7 +53,7 @@ invoices = []
 currencies = ['EUR', 'GBP', 'USD', None]
 
 for ws in workspaces:
-    # Случайный выбор плана
+    # Randomly select a plan
     plan = random.choice(plans)
     start = start_date + datetime.timedelta(days=random.randint(0, 300))
     
@@ -66,9 +66,9 @@ for ws in workspaces:
         'status': random.choice(['active', 'churned', 'MISSING_STATUS'])
     })
     
-    # Генерация счетов (инвойсов)
+    # Generate invoices
     for month in range(12):
-        if random.random() < 0.05: continue # Пропуск некоторых периодов
+        if random.random() < 0.05: continue # Skip some billing periods
         
         inv_id = random.randint(10000, 99999)
         gross = plan['price'] * 1.2
@@ -82,8 +82,8 @@ for ws in workspaces:
             'currency': random.choice(currencies),
             'net_amount': plan['price'],
             'tax_amount': plan['price'] * 0.2,
-            'gross_amount': gross if random.random() > 0.1 else -100, # Отрицательная сумма (грязь)
-            'paid': random.random() > 0.05 # 5% ошибок оплат
+            'gross_amount': gross if random.random() > 0.1 else -100, # Negative amount (dirty data)
+            'paid': random.random() > 0.05 # 5% payment errors
         })
 
 df_subs = pd.DataFrame(subscriptions)
