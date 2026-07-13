@@ -1,38 +1,72 @@
 #!/bin/bash
 
-# Переменные из .env
+# Load variables from .env
 source .env
 
-echo "=== Проверка контейнера PostgreSQL ==="
+echo "=== Checking PostgreSQL Container ==="
 docker ps | grep torgstat_postgres
 if [ $? -ne 0 ]; then
-  echo "Контейнер не запущен! Используй: docker compose up -d"
+  echo "[ERROR] Container is not running! Use: docker-compose up -d"
   exit 1
 fi
 
-echo "=== Проверка порта ${POSTGRES_PORT} ==="
+echo "=== Checking Port ${POSTGRES_PORT} ==="
 nc -zv localhost ${POSTGRES_PORT}
 if [ $? -ne 0 ]; then
-  echo "Postgres не доступен на порту ${POSTGRES_PORT}"
+  echo "[ERROR] Postgres is not accessible on port ${POSTGRES_PORT}"
   exit 1
 fi
 
-echo "=== Проверка подключения к базе ==="
+echo "=== Verifying init script mounting ==="
+# Check if the init script exists inside the container
+docker exec -i torgstat_postgres ls /docker-entrypoint-initdb.d/init.sh > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "[ERROR] init.sh not found inside the container! Check volume mounting in docker-compose.yml"
+  exit 1
+else
+  echo "[OK] init.sh is mounted correctly."
+fi
+
+echo "=== Checking Database Connection ==="
 docker exec -i torgstat_postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -c '\q'
 if [ $? -ne 0 ]; then
-  echo "Не удалось подключиться к базе!"
+  echo "[ERROR] Failed to connect to the database!"
   exit 1
 fi
 
-echo "=== Проверка схемы analytics ==="
-docker exec -i torgstat_postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -tAc "SELECT schema_name FROM information_schema.schemata WHERE schema_name='analytics';" | grep analytics
+echo "=== Checking Medallion Architecture Schemas ==="
+# Verify raw, staging, and marts schemas exist
+for schema in "$RAW_SCHEMA" "$STAGING_SCHEMA" "$MARTS_SCHEMA"; do
+  docker exec -i torgstat_postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -tAc "SELECT schema_name FROM information_schema.schemata WHERE schema_name='$schema';" | grep -q "$schema"
+  if [ $? -ne 0 ]; then
+    echo "[ERROR] Schema '$schema' not found!"
+    echo "--- DEBUG: Current schemas in database ---"
+    docker exec -i torgstat_postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -c "\dn"
+    echo "--- DEBUG: Recent PostgreSQL logs (potential init error) ---"
+    docker logs torgstat_postgres --tail 20
+    exit 1
+  else
+    echo "[OK] Schema '$schema' exists."
+  fi
+done
+
+echo "=== Checking Database Users ==="
+# Check ETL/dbt user
+docker exec -i torgstat_postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -tAc "SELECT 1 FROM pg_roles WHERE rolname='$APP_DB_USER';" | grep -q 1
 if [ $? -ne 0 ]; then
-  echo "Схема analytics не найдена!"
+  echo "[ERROR] User '$APP_DB_USER' not found!"
   exit 1
+else
+  echo "[OK] User '$APP_DB_USER' exists."
 fi
 
-echo "=== Проверка пользователей appuser и readonly ==="
-docker exec -i torgstat_postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -tAc "SELECT 1 FROM pg_roles WHERE rolname='appuser';" | grep 1
-docker exec -i torgstat_postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -tAc "SELECT 1 FROM pg_roles WHERE rolname='readonly';" | grep 1
+# Check Read-Only user
+docker exec -i torgstat_postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -tAc "SELECT 1 FROM pg_roles WHERE rolname='$READONLY_USER';" | grep -q 1
+if [ $? -ne 0 ]; then
+  echo "[ERROR] User '$READONLY_USER' not found!"
+  exit 1
+else
+  echo "[OK] User '$READONLY_USER' exists."
+fi
 
-echo "✅ Все проверки пройдены успешно!"
+echo "✅ All health checks passed successfully! DWH is ready."

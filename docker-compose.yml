@@ -1,23 +1,29 @@
-
 services:
   postgres:
     image: postgres:15
     container_name: torgstat_postgres
     restart: always
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER} 
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      RAW_SCHEMA: ${RAW_SCHEMA}
+      STAGING_SCHEMA: ${STAGING_SCHEMA}
+      MARTS_SCHEMA: ${MARTS_SCHEMA}
+      APP_DB_USER: ${APP_DB_USER}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD}
+      READONLY_USER: ${READONLY_USER}
+      READONLY_PASSWORD: ${READONLY_PASSWORD}
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+      # Монтируем всю папку init, чтобы избежать ошибок с "Is a directory"
       - ./init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-volumes:
-  postgres_data:
