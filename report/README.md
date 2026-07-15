@@ -7,4 +7,4 @@ This directory is reserved for future analytics deliverables, such as:
 - exported PDF reports;
 - presentations and supporting documentation.
 
-No report or Power BI artifact has been added yet. The current repository implements synthetic data generation and raw PostgreSQL loading; the marts and reporting layers are still planned work.
+No report or Power BI artifact has been added yet. The repository currently implements synthetic data generation, raw PostgreSQL loading, dbt staging, and marts models. The reporting layer remains planned work.

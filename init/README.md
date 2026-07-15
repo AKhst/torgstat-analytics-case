@@ -83,7 +83,7 @@ Replace the example database and role names if your `.env` uses different values
 
 `GRANT ... ON ALL TABLES` affects only tables that exist when the statement runs. During first-time initialization, the analytics tables do not exist yet. The current script also does not configure `ALTER DEFAULT PRIVILEGES`.
 
-Tables created by `APP_DB_USER` are owned by that role, so the Python importer and dbt can use them. However, `READONLY_USER` does not automatically receive access to marts tables created later. After creating marts as `APP_DB_USER`, grant access with an administrative account:
+Tables created by `APP_DB_USER` are owned by that role, so the Python importer and dbt can use them. The dbt project grants `SELECT` on each marts relation through a post-hook. Tables created later outside dbt are not covered automatically; grant access to those with an administrative account:
 
 ```sql
 GRANT USAGE ON SCHEMA marts TO readonly;

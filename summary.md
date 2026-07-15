@@ -50,9 +50,7 @@ Example KPI and dashboard scenarios:
 - **Data-quality monitoring:** a dashboard that highlights invalid records and anomaly rates
 - **Business readiness:** a report showing how much of the metric story is trustworthy once quality checks are applied
 
-A more advanced version of this case would include an explicit exchange-rate table, refreshed regularly, so that invoices in EUR, GBP, and USD can be converted into a single reporting currency for consolidated B2B SaaS reporting.
-
-This repository includes a demonstrative implementation of that pattern: a sample FX rates dataset is loaded from [data/fx_rates.csv](data/fx_rates.csv), exposed through dbt as a staging model, and joined to invoices in a converted invoice mart model. In a production environment, this would be extended into a scheduled ingestion flow that pulls FX rates from a real provider or finance source, stores them in a dedicated table such as fx_rates, and joins them to invoices by currency and reporting date. The reporting layer would then use the latest available rate for each invoice period, with clear handling for missing or late rates and separate logic for historical versus current reporting.
+The repository includes a demonstrative implementation of this pattern: a sample FX rates dataset is loaded from [data/fx_rates.csv](data/fx_rates.csv), exposed through dbt as a staging model, and joined to invoices in a converted invoice mart model. In a production environment, this would be extended into a scheduled ingestion flow that refreshes rates from a finance source and adds stronger handling for missing or late rates.
 
 These questions are important because they show not only how to calculate metrics, but also how to make the reporting layer robust, trustworthy, and production-ready.
 
@@ -61,12 +59,13 @@ The repository currently includes a working local pipeline for:
 - PostgreSQL initialization and schema setup
 - Synthetic data generation
 - Raw-data loading into PostgreSQL
-- dbt staging models and transformation logic
+- dbt staging models, marts, and data-quality tests
+- historical FX-rate loading and invoice conversion to USD
 
 ## 🔜 Next Steps
 The next logical step is to extend the project with more mature analytics engineering capabilities, including:
 - incremental data loading
-- richer marts and business metrics
+- richer business metrics and documented KPI definitions
 - stronger data-quality and observability practices
 - BI artifacts such as dashboards and semantic models
 

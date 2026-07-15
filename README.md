@@ -1,6 +1,6 @@
 # Torgstat SaaS Analytics Case
 
-This repository is a work-in-progress analytics engineering case study for a synthetic B2B subscription SaaS product. It currently implements local data generation, loading into PostgreSQL, and a tested dbt staging layer.
+This repository is an analytics engineering case study for a synthetic B2B subscription SaaS product. It implements local data generation, loading into PostgreSQL, a tested dbt staging layer, and BI-oriented marts.
 
 The intended data flow is:
 
@@ -8,7 +8,7 @@ The intended data flow is:
 Synthetic ERP/billing data -> CSV files -> PostgreSQL raw schema -> dbt staging -> marts -> BI reports
 ```
 
-The CSV generation, PostgreSQL raw load, and six dbt staging views are implemented. Mart models and Power BI artifacts have not been added yet.
+The CSV generation, PostgreSQL raw load, seven dbt staging views, and nine marts models are implemented. Power BI artifacts are not included yet.
 
 ## Technology Stack
 
@@ -27,11 +27,12 @@ The CSV generation, PostgreSQL raw load, and six dbt staging views are implement
 ├── report/                       Placeholder for future report artifacts
 ├── scripts/
 │   ├── generate_data.py          Generates the synthetic SaaS dataset
-│   └── import_to_postgres.py     Replaces tables in the raw schema
+│   ├── fetch_fx_rates.py          Fetches historical FX rates for invoices
+│   └── import_to_postgres.py      Replaces tables in the raw schema
 ├── src/torgstat/                 Reusable Python package code
 ├── torgstat_dbt/
 │   ├── dbt_project.yml           dbt project configuration
-│   └── models/                   Sources and current staging models
+│   └── models/                   Sources, staging models, and marts
 ├── check_postgres.sh             Checks the container, schemas, and roles
 ├── docker-compose.yml            Local PostgreSQL service
 ├── requirements.txt              Python and dbt dependencies
@@ -40,7 +41,7 @@ The CSV generation, PostgreSQL raw load, and six dbt staging views are implement
 
 ## Implemented Data Model
 
-The generator creates six CSV files:
+The generator creates six core CSV files. FX rates are stored in a seventh file and can be refreshed separately with `scripts/fetch_fx_rates.py`:
 
 | Dataset | Typical row count | Main relationship |
 | --- | ---: | --- |
@@ -50,6 +51,7 @@ The generator creates six CSV files:
 | `subscriptions` | 200 | Belongs to a workspace and plan |
 | `invoices` | About 2,280 | References a subscription, workspace, and plan |
 | `events` | 5,000 | Belongs to a workspace |
+| `fx_rates` | 1,734 | Historical rates used to convert EUR and GBP invoice amounts to USD |
 
 Generation is deterministic because both Python and NumPy use seed `42`. See [data/README.md](data/README.md) for the exact columns and injected data-quality issues.
 
@@ -57,9 +59,9 @@ PostgreSQL uses three schemas configured through environment variables:
 
 - `raw`: tables loaded directly from CSV files
 - `staging`: intended for cleaned and typed dbt views
-- `marts`: intended for BI-ready fact and dimension tables
+- `marts`: BI-ready fact, dimension, billing, and converted invoice models
 
-The `raw` and `staging` layers are implemented. The marts layer is planned.
+All three layers are implemented. dbt grants `SELECT` on created marts relations to `READONLY_USER` through a post-hook.
 
 ## Quick Start
 
@@ -121,7 +123,15 @@ The official PostgreSQL image runs `init/init.sh` only when `postgres_data/` is 
 python scripts/generate_data.py
 ```
 
-This writes `plans.csv`, `users.csv`, `sessions.csv`, `subscriptions.csv`, `invoices.csv`, and `events.csv` to `data/`.
+This writes the six core files (`plans.csv`, `users.csv`, `sessions.csv`, `subscriptions.csv`, `invoices.csv`, and `events.csv`) to `data/`.
+
+To fetch or refresh historical FX rates used for invoice conversion:
+
+```bash
+python scripts/fetch_fx_rates.py
+```
+
+This uses the Frankfurter API and writes `data/fx_rates.csv`. The script requires network access.
 
 ### 5. Load the raw schema
 
@@ -141,7 +151,7 @@ docker exec -it torgstat_postgres \
 
 ## dbt Status
 
-The dbt project is located in `torgstat_dbt/` and references all six tables in `raw`. Its workspace-centric staging layer contains:
+The dbt project is located in `torgstat_dbt/` and references seven tables in `raw`. Its workspace-centric staging layer contains:
 
 - `stg_plans`: typed plan attributes and billing-period validation;
 - `stg_users`: user-to-workspace membership, safe signup-date parsing, GDPR/deletion fields, and quality flags;
@@ -149,8 +159,11 @@ The dbt project is located in `torgstat_dbt/` and references all six tables in `
 - `stg_subscriptions`: workspace subscriptions with normalized status and duplicate-ID flags;
 - `stg_invoices`: workspace invoices with duplicate, currency, amount, and billing-period quality flags;
 - `stg_events`: normalized workspace-level product events.
+- `stg_fx_rates`: typed daily FX rates with normalized currency codes.
 
-The project includes an environment-based `profiles.yml` and a schema naming macro, so staging models are created directly in the configured `STAGING_SCHEMA`.
+The marts layer contains conformed dimensions, subscription/invoice/session/event facts, a monthly workspace billing aggregate, and `fct_invoices_converted`, which converts eligible EUR/GBP/USD invoice amounts to USD using the latest available rate on or before the invoice period.
+
+The project includes an environment-based `profiles.yml` and schema naming macros, so staging and marts models are created directly in the configured schemas.
 
 Run all models and tests from the repository root:
 
@@ -177,11 +190,12 @@ Known limitations:
 - duplicate source subscription and invoice identifiers are retained and flagged, not silently removed;
 - events do not have a source event identifier;
 - there is no dedicated workspace source table, so workspace dimensions must be derived in marts;
-- marts models and business-level metrics are not implemented yet.
+- the converted invoice model leaves amounts as `NULL` when the currency is missing or no FX rate is available;
+- the reporting layer has no Power BI semantic model or dashboard yet.
 
 ## Reporting Status
 
-The `report/` directory is a placeholder. There is currently no `.pbip`, Power BI semantic model, PDF, or presentation in the repository. The intended BI account is `READONLY_USER`, restricted to the marts schema, but permissions for future tables must be granted after those tables are created.
+The `report/` directory is a placeholder. There is currently no `.pbip`, Power BI semantic model, PDF, or presentation in the repository. The intended BI account is `READONLY_USER`, restricted to the marts schema. dbt grants it `SELECT` on marts created by the project; default privileges may still be needed for tables created outside dbt.
 
 ## Troubleshooting
 
