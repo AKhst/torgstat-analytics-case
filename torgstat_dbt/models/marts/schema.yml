@@ -2,25 +2,30 @@ version: 2
 
 models:
   - name: dim_workspaces
-    description: Conformed workspace dimension derived from every workspace-bearing source.
-    config:
-      contract: {enforced: true}
+    description: Conformed workspace dimension with lifecycle, ownership, subscription, and acquisition attributes.
+    config: {contract: {enforced: true}}
     columns:
       - {name: workspace_key, data_type: text, data_tests: [not_null, unique]}
       - {name: workspace_id, data_type: text, data_tests: [not_null, unique]}
-      - {name: first_user_signup_date, data_type: date}
+      - {name: workspace_name, data_type: text, data_tests: [not_null]}
+      - {name: created_at, data_type: date, data_tests: [not_null]}
+      - {name: country_code, data_type: text, data_tests: [not_null]}
+      - {name: customer_segment, data_type: text, data_tests: [not_null]}
+      - {name: billing_currency, data_type: text, data_tests: [not_null]}
+      - {name: is_active, data_type: boolean, data_tests: [not_null]}
       - {name: user_count, data_type: bigint, data_tests: [not_null]}
       - {name: active_user_count, data_type: bigint, data_tests: [not_null]}
-      - {name: country_count, data_type: bigint, data_tests: [not_null]}
-      - {name: first_subscription_date, data_type: date}
+      - {name: owner_count, data_type: bigint, data_tests: [not_null]}
+      - {name: active_owner_count, data_type: bigint, data_tests: [not_null]}
       - {name: subscription_count, data_type: bigint, data_tests: [not_null]}
       - {name: active_subscription_count, data_type: bigint, data_tests: [not_null]}
+      - {name: acquisition_source, data_type: text}
+      - {name: acquisition_medium, data_type: text}
       - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
 
   - name: dim_users
-    description: Conformed user dimension retaining workspace membership and privacy flags.
-    config:
-      contract: {enforced: true}
+    description: Conformed current-user dimension retaining privacy and lifecycle state.
+    config: {contract: {enforced: true}}
     columns:
       - {name: user_key, data_type: text, data_tests: [not_null, unique]}
       - name: workspace_key
@@ -31,128 +36,215 @@ models:
               arguments: {to: "ref('dim_workspaces')", field: workspace_key}
       - {name: user_id, data_type: bigint, data_tests: [not_null, unique]}
       - {name: workspace_id, data_type: text, data_tests: [not_null]}
-      - {name: signup_date, data_type: date}
-      - {name: country_code, data_type: text, data_tests: [not_null]}
+      - {name: created_at, data_type: "timestamp without time zone"}
+      - {name: country_code, data_type: text}
+      - {name: user_role, data_type: text, data_tests: [not_null]}
+      - {name: signup_type, data_type: text, data_tests: [not_null]}
       - {name: has_gdpr_consent, data_type: boolean, data_tests: [not_null]}
-      - {name: is_deleted, data_type: boolean, data_tests: [not_null]}
-      - {name: is_invalid_signup_date, data_type: boolean, data_tests: [not_null]}
+      - {name: is_active, data_type: boolean, data_tests: [not_null]}
+      - {name: deleted_at, data_type: "timestamp without time zone"}
+      - {name: is_invalid_created_at, data_type: boolean, data_tests: [not_null]}
       - {name: is_missing_country, data_type: boolean, data_tests: [not_null]}
+      - {name: has_invalid_lifecycle, data_type: boolean, data_tests: [not_null]}
       - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
 
   - name: dim_plans
-    description: Valid subscription plans available for dimensional joins.
-    config:
-      contract: {enforced: true}
+    description: Conformed product plans with monthly and annual prices.
+    config: {contract: {enforced: true}}
     columns:
       - {name: plan_key, data_type: text, data_tests: [not_null, unique]}
       - {name: plan_id, data_type: integer, data_tests: [not_null, unique]}
-      - {name: plan_name, data_type: text, data_tests: [not_null]}
-      - {name: billing_period, data_type: text, data_tests: [not_null]}
-      - {name: price, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: plan_name, data_type: text, data_tests: [not_null, unique]}
+      - {name: tier_rank, data_type: integer, data_tests: [not_null, unique]}
+      - {name: monthly_price, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: annual_price, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: is_active, data_type: boolean, data_tests: [not_null]}
       - {name: is_free_plan, data_type: boolean, data_tests: [not_null]}
       - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
 
   - name: fct_subscriptions
-    description: Subscription fact at workspace and source-subscription grain.
-    config:
-      contract: {enforced: true}
+    description: Subscription lifecycle fact independent of plan changes.
+    config: {contract: {enforced: true}}
     columns:
       - {name: subscription_key, data_type: text, data_tests: [not_null, unique]}
       - name: workspace_key
         data_type: text
         data_tests:
+          - not_null
           - relationships:
               arguments: {to: "ref('dim_workspaces')", field: workspace_key}
-      - name: plan_key
-        data_type: text
-        data_tests:
-          - relationships:
-              arguments: {to: "ref('dim_plans')", field: plan_key}
-      - {name: subscription_id, data_type: bigint, data_tests: [not_null]}
+      - {name: subscription_id, data_type: bigint, data_tests: [not_null, unique]}
       - {name: workspace_id, data_type: text, data_tests: [not_null]}
-      - {name: plan_id, data_type: integer, data_tests: [not_null]}
-      - {name: start_date, data_type: date, data_tests: [not_null]}
+      - {name: started_at, data_type: date, data_tests: [not_null]}
+      - {name: ended_at, data_type: date}
       - {name: subscription_status, data_type: text, data_tests: [not_null]}
-      - {name: is_missing_subscription_status, data_type: boolean, data_tests: [not_null]}
-      - {name: is_reused_id_across_workspaces, data_type: boolean, data_tests: [not_null]}
+      - {name: has_invalid_period, data_type: boolean, data_tests: [not_null]}
+      - {name: has_invalid_lifecycle, data_type: boolean, data_tests: [not_null]}
       - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
 
-  - name: fct_invoices
-    description: Invoice fact with accounting controls and an explicit analytics eligibility decision.
-    config:
-      contract: {enforced: true}
+  - name: fct_subscription_plan_history
+    description: Plan and billing-frequency periods for each subscription.
+    config: {contract: {enforced: true}}
     columns:
-      - {name: invoice_key, data_type: text, data_tests: [not_null, unique]}
+      - {name: subscription_plan_period_key, data_type: text, data_tests: [not_null, unique]}
       - name: subscription_key
         data_type: text
         data_tests:
+          - not_null
           - relationships:
               arguments: {to: "ref('fct_subscriptions')", field: subscription_key}
       - name: workspace_key
         data_type: text
         data_tests:
+          - not_null
           - relationships:
               arguments: {to: "ref('dim_workspaces')", field: workspace_key}
       - name: plan_key
         data_type: text
         data_tests:
+          - not_null
           - relationships:
               arguments: {to: "ref('dim_plans')", field: plan_key}
-      - {name: invoice_id, data_type: bigint, data_tests: [not_null]}
+      - {name: subscription_plan_period_id, data_type: bigint, data_tests: [not_null, unique]}
       - {name: subscription_id, data_type: bigint, data_tests: [not_null]}
       - {name: workspace_id, data_type: text, data_tests: [not_null]}
       - {name: plan_id, data_type: integer, data_tests: [not_null]}
+      - {name: billing_frequency, data_type: text, data_tests: [not_null]}
+      - {name: valid_from, data_type: date, data_tests: [not_null]}
+      - {name: valid_to, data_type: date}
+      - {name: change_type, data_type: text, data_tests: [not_null]}
+      - {name: has_invalid_period, data_type: boolean, data_tests: [not_null]}
+      - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
+
+  - name: fct_invoices
+    description: Invoice fact with billing, cash, accounting, and eligibility controls.
+    config: {contract: {enforced: true}}
+    columns: &invoice_columns
+      - {name: invoice_key, data_type: text, data_tests: [not_null, unique]}
+      - name: subscription_key
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: "ref('fct_subscriptions')", field: subscription_key}
+      - name: workspace_key
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: "ref('dim_workspaces')", field: workspace_key}
+      - name: plan_key
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: "ref('dim_plans')", field: plan_key}
+      - {name: invoice_id, data_type: bigint, data_tests: [not_null, unique]}
+      - {name: subscription_id, data_type: bigint, data_tests: [not_null]}
+      - {name: workspace_id, data_type: text, data_tests: [not_null]}
+      - {name: plan_id, data_type: integer, data_tests: [not_null]}
+      - {name: billing_frequency, data_type: text, data_tests: [not_null]}
+      - {name: issued_at, data_type: date, data_tests: [not_null]}
+      - {name: due_at, data_type: date, data_tests: [not_null]}
       - {name: period_start, data_type: date, data_tests: [not_null]}
       - {name: period_end, data_type: date, data_tests: [not_null]}
-      - {name: currency_code, data_type: text, data_tests: [not_null]}
+      - {name: source_currency_code, data_type: text}
       - {name: net_amount, data_type: "numeric(14,2)", data_tests: [not_null]}
       - {name: tax_amount, data_type: "numeric(14,2)", data_tests: [not_null]}
       - {name: gross_amount, data_type: "numeric(14,2)", data_tests: [not_null]}
-      - {name: is_paid, data_type: boolean, data_tests: [not_null]}
+      - {name: payment_status, data_type: text, data_tests: [not_null]}
+      - {name: paid_at, data_type: date}
+      - {name: amount_reconciliation_difference, data_type: "numeric(14,2)", data_tests: [not_null]}
       - {name: is_missing_currency, data_type: boolean, data_tests: [not_null]}
-      - {name: is_negative_gross_amount, data_type: boolean, data_tests: [not_null]}
-      - {name: has_amount_mismatch, data_type: boolean, data_tests: [not_null]}
-      - {name: is_invalid_billing_period, data_type: boolean, data_tests: [not_null]}
-      - {name: is_reused_id_across_workspaces, data_type: boolean, data_tests: [not_null]}
+      - {name: has_negative_amount, data_type: boolean, data_tests: [not_null]}
+      - {name: has_amount_reconciliation_mismatch, data_type: boolean, data_tests: [not_null]}
+      - {name: has_invalid_billing_period, data_type: boolean, data_tests: [not_null]}
+      - {name: has_invalid_due_date, data_type: boolean, data_tests: [not_null]}
+      - {name: has_invalid_payment_lifecycle, data_type: boolean, data_tests: [not_null]}
       - {name: is_analytics_eligible, data_type: boolean, data_tests: [not_null]}
       - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
+      - {name: analytics_net_amount, data_type: "numeric(14,2)"}
+      - {name: analytics_tax_amount, data_type: "numeric(14,2)"}
       - {name: analytics_gross_amount, data_type: "numeric(14,2)"}
 
+  - name: fct_invoices_converted
+    description: Eligible invoice amounts converted to USD with the latest prior FX rate.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: invoice_key, data_type: text, data_tests: [not_null, unique]}
+      - {name: subscription_key, data_type: text, data_tests: [not_null]}
+      - {name: workspace_key, data_type: text, data_tests: [not_null]}
+      - {name: plan_key, data_type: text, data_tests: [not_null]}
+      - {name: invoice_id, data_type: bigint, data_tests: [not_null, unique]}
+      - {name: subscription_id, data_type: bigint, data_tests: [not_null]}
+      - {name: workspace_id, data_type: text, data_tests: [not_null]}
+      - {name: plan_id, data_type: integer, data_tests: [not_null]}
+      - {name: billing_frequency, data_type: text, data_tests: [not_null]}
+      - {name: issued_at, data_type: date, data_tests: [not_null]}
+      - {name: due_at, data_type: date, data_tests: [not_null]}
+      - {name: period_start, data_type: date, data_tests: [not_null]}
+      - {name: period_end, data_type: date, data_tests: [not_null]}
+      - {name: source_currency_code, data_type: text}
+      - {name: net_amount, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: tax_amount, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: gross_amount, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: payment_status, data_type: text, data_tests: [not_null]}
+      - {name: paid_at, data_type: date}
+      - {name: amount_reconciliation_difference, data_type: "numeric(14,2)", data_tests: [not_null]}
+      - {name: is_missing_currency, data_type: boolean, data_tests: [not_null]}
+      - {name: has_negative_amount, data_type: boolean, data_tests: [not_null]}
+      - {name: has_amount_reconciliation_mismatch, data_type: boolean, data_tests: [not_null]}
+      - {name: has_invalid_billing_period, data_type: boolean, data_tests: [not_null]}
+      - {name: has_invalid_due_date, data_type: boolean, data_tests: [not_null]}
+      - {name: has_invalid_payment_lifecycle, data_type: boolean, data_tests: [not_null]}
+      - {name: is_analytics_eligible, data_type: boolean, data_tests: [not_null]}
+      - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
+      - {name: analytics_net_amount, data_type: "numeric(14,2)"}
+      - {name: analytics_tax_amount, data_type: "numeric(14,2)"}
+      - {name: analytics_gross_amount, data_type: "numeric(14,2)"}
+      - {name: fx_rate_to_usd, data_type: "numeric(14,6)"}
+      - {name: fx_rate_date, data_type: date}
+      - {name: analytics_net_amount_usd, data_type: "numeric(20,6)"}
+      - {name: analytics_tax_amount_usd, data_type: "numeric(20,6)"}
+      - {name: analytics_gross_amount_usd, data_type: "numeric(20,6)"}
+
   - name: fct_sessions
-    description: Acquisition session fact enriched with user and workspace keys.
-    config:
-      contract: {enforced: true}
+    description: Session fact enriched with user and workspace keys.
+    config: {contract: {enforced: true}}
     columns:
       - {name: session_key, data_type: text, data_tests: [not_null, unique]}
       - name: user_key
         data_type: text
         data_tests:
+          - not_null
           - relationships:
               arguments: {to: "ref('dim_users')", field: user_key}
       - name: workspace_key
         data_type: text
         data_tests:
+          - not_null
           - relationships:
               arguments: {to: "ref('dim_workspaces')", field: workspace_key}
-      - {name: session_id, data_type: text, data_tests: [not_null]}
+      - {name: session_id, data_type: text, data_tests: [not_null, unique]}
       - {name: user_id, data_type: bigint, data_tests: [not_null]}
       - {name: workspace_id, data_type: text, data_tests: [not_null]}
-      - {name: session_date, data_type: date, data_tests: [not_null]}
+      - {name: started_at, data_type: "timestamp without time zone", data_tests: [not_null]}
       - {name: utm_source, data_type: text}
       - {name: utm_medium, data_type: text}
       - {name: is_first_session, data_type: boolean, data_tests: [not_null]}
-      - {name: is_missing_utm_source, data_type: boolean, data_tests: [not_null]}
+      - {name: is_missing_first_touch_source, data_type: boolean, data_tests: [not_null]}
+      - {name: has_utm_on_non_first_session, data_type: boolean, data_tests: [not_null]}
       - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
 
   - name: fct_events
-    description: Product event fact retaining repeated event occurrences.
-    config:
-      contract: {enforced: true}
+    description: Workspace product-event fact retaining repeated occurrences.
+    config: {contract: {enforced: true}}
     columns:
       - {name: event_key, data_type: text, data_tests: [not_null, unique]}
       - name: workspace_key
         data_type: text
         data_tests:
+          - not_null
           - relationships:
               arguments: {to: "ref('dim_workspaces')", field: workspace_key}
       - {name: workspace_id, data_type: text, data_tests: [not_null]}
@@ -164,22 +256,22 @@ models:
       - {name: loaded_at_utc, data_type: "timestamp with time zone", data_tests: [not_null]}
 
   - name: mart_workspace_monthly_billing
-    description: Currency-safe monthly workspace billing aggregate based only on eligible invoice amounts.
-    config:
-      contract: {enforced: true}
+    description: Monthly billed amounts grouped by source currency and invoice issue date.
+    config: {contract: {enforced: true}}
     data_tests:
       - unique_combination_of_columns:
-          arguments: {combination_of_columns: [workspace_key, billing_month, currency_code]}
+          arguments: {combination_of_columns: [workspace_key, billing_month, source_currency_code]}
     columns:
       - {name: workspace_month_currency_key, data_type: text, data_tests: [not_null, unique]}
       - name: workspace_key
         data_type: text
         data_tests:
+          - not_null
           - relationships:
               arguments: {to: "ref('dim_workspaces')", field: workspace_key}
       - {name: workspace_id, data_type: text, data_tests: [not_null]}
       - {name: billing_month, data_type: date, data_tests: [not_null]}
-      - {name: currency_code, data_type: text, data_tests: [not_null]}
+      - {name: source_currency_code, data_type: text}
       - {name: invoice_count, data_type: bigint, data_tests: [not_null]}
       - {name: paid_invoice_count, data_type: bigint, data_tests: [not_null]}
       - {name: eligible_invoice_count, data_type: bigint, data_tests: [not_null]}

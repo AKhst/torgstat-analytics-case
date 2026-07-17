@@ -1,74 +1,47 @@
-# Summary — SaaS Analytics Case
+# Summary — SaaS Analytics Case v1
 
-## 🎯 Project Objective
-This repository showcases a practical analytics engineering workflow for a B2B subscription-based SaaS product. The project covers synthetic data generation, ingestion into PostgreSQL, transformation with dbt, and a structure suitable for downstream BI reporting for business customers.
+## Project Objective
 
-## 🧱 What This Project Demonstrates
-- An end-to-end data pipeline from raw data to analytics-ready models
-- A medallion-style structure: raw → staging → marts
-- A local PostgreSQL environment with reproducible setup
-- Python-based data generation and loading scripts
-- dbt models and data-quality checks for a realistic B2B analytics workflow
+The project demonstrates an end-to-end analytics-engineering workflow for a synthetic B2B SaaS product: deterministic source generation, contract validation, PostgreSQL ingestion, dbt transformations, data-quality controls, and BI-oriented marts.
 
-## 📊 Core Metrics
-These figures are illustrative example metrics used to frame the business story of the case. They are not produced automatically by the current repository pipeline from the generated synthetic dataset.
+## Deterministic Baseline
 
-The generator and CSVs currently support the following verified facts:
-- **Users generated:** 2,500
-- **Sessions generated:** 1,000
-- **Subscriptions generated:** 200
-- **Invoices generated:** 2,280
-- **Events generated:** 5,000
-- **Invalid signup dates:** 240
-- **Deleted users:** 114
-- **Subscriptions with missing status:** 60
-- **Negative invoice amounts:** 241
-- **Unpaid invoices:** 118
-- **Duplicate subscription identifiers:** 1
-- **Duplicate invoice identifiers:** 23
+- Workspaces: 200 total, 187 active
+- Users: 2,500 total, 2,235 active, 265 soft-deleted
+- Sessions: 1,297 with exactly one earliest first session per participating user
+- Subscriptions: 180, including 111 active, 18 trial, 15 past due, and 36 cancelled
+- Plan-history periods: 234, including 25 upgrades and 29 downgrades
+- Invoices: 935, including 867 paid, 28 failed, and 40 pending
+- Product events: 5,000
 
-## 📈 Key Insights
-The dataset is intentionally designed to include data-quality issues rather than a perfectly clean SaaS history. The most visible patterns from the current synthetic data are:
-- A meaningful share of records contains invalid or inconsistent values, especially around signup dates and invoice amounts.
-- Subscription status is missing for a noticeable subset of records.
-- Invoice quality issues are present, including negative amounts and unpaid invoices.
-- The data model is suitable for demonstrating staging, quality checks, and analytics-layer design rather than for claiming business performance outcomes.
+## Controlled Quality Scenarios
 
-## 📊 What Can Be Analyzed in Power BI
-Once the data is loaded into the analytics layer, Power BI can be used to answer practical business questions such as:
-- How many users, subscriptions, invoices, and events are present in the data model?
-- Which records are affected by data-quality issues such as invalid dates, missing statuses, or negative amounts?
-- How do subscription and invoice quality problems impact downstream reporting?
-- Which dimensions can be used for segmentation, such as plan type, workspace, payment status, or acquisition channel?
-- How would a dashboard surface data quality issues before business stakeholders rely on the metrics?
+- Invalid raw user creation timestamps: 25
+- Missing user countries: 49
+- Missing invoice currencies: 22
+- Invoice amount reconciliation mismatches: 16
+- Duplicate workspace, user, subscription, plan-period, and invoice IDs: 0
+- Sessions before a valid user creation timestamp: 0
+- Overlapping plan-history periods: 0
+- Free-plan invoices: 0
 
-Example KPI and dashboard scenarios:
-- **Customer volume:** total users and active subscriptions by month
-- **Billing health:** paid vs unpaid invoices, negative amounts, and missing subscription statuses
-- **Multi-currency reporting:** bringing invoices from different currencies into a common reporting view and highlighting the need for conversion logic
-- **Product engagement:** event counts by event type and date
-- **Data-quality monitoring:** a dashboard that highlights invalid records and anomaly rates
-- **Business readiness:** a report showing how much of the metric story is trustworthy once quality checks are applied
+## Analytics Capabilities
 
-The repository includes a demonstrative implementation of this pattern: a sample FX rates dataset is loaded from [data/fx_rates.csv](data/fx_rates.csv), exposed through dbt as a staging model, and joined to invoices in a converted invoice mart model. In a production environment, this would be extended into a scheduled ingestion flow that refreshes rates from a finance source and adds stronger handling for missing or late rates.
+The current marts support:
 
-These questions are important because they show not only how to calculate metrics, but also how to make the reporting layer robust, trustworthy, and production-ready.
+- workspace segmentation and lifecycle analysis;
+- owner-based first-touch acquisition;
+- active, trial, past-due, cancelled, and reactivated subscriptions;
+- upgrade and downgrade history without changing subscription identity;
+- billed and paid invoice analysis using separate issue, due, service, and payment dates;
+- explicit invoice eligibility and Data Quality reporting;
+- source-currency monthly billing and provisional USD conversion;
+- product engagement by workspace, event, and session.
 
-## ✅ Current Status
-The repository currently includes a working local pipeline for:
-- PostgreSQL initialization and schema setup
-- Synthetic data generation
-- Raw-data loading into PostgreSQL
-- dbt staging models, marts, and data-quality tests
-- historical FX-rate loading and invoice conversion to USD
+## Remaining Work
 
-## 🔜 Next Steps
-The next logical step is to extend the project with more mature analytics engineering capabilities, including:
-- incremental data loading
-- richer business metrics and documented KPI definitions
-- stronger data-quality and observability practices
-- BI artifacts such as dashboards and semantic models
-
-## 🧑‍💻 Author
-**Aleksei** — Python backend and data analyst.
-Skills: SQL, Python, dbt, PostgreSQL, and analytics engineering.
+- Approve currency fallback and authoritative FX-date rules.
+- Add recognized revenue, MRR, ARR, aging, and retention marts.
+- Build the Power BI semantic model and dashboard.
+- Replace destructive raw loads with durable batch ingestion.
+- Add CI/CD, orchestration, observability, secrets management, and environment separation.

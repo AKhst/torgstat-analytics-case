@@ -1,15 +1,17 @@
 select
-    session.session_key,
+    sessions.session_key,
     users.user_key,
-    {{ generate_surrogate_key(['users.workspace_id']) }} as workspace_key,
-    session.session_id,
-    session.user_id,
+    workspaces.workspace_key,
+    sessions.session_id,
+    sessions.user_id,
     users.workspace_id,
-    session.session_date,
-    session.utm_source,
-    session.utm_medium,
-    session.is_first_session,
-    session.is_missing_utm_source,
-    session.loaded_at_utc
-from {{ ref('stg_sessions') }} as session
+    sessions.started_at,
+    sessions.utm_source,
+    sessions.utm_medium,
+    sessions.is_first_session,
+    sessions.is_missing_first_touch_source,
+    sessions.has_utm_on_non_first_session,
+    sessions.loaded_at_utc
+from {{ ref('stg_sessions') }} as sessions
 inner join {{ ref('stg_users') }} as users using (user_id)
+inner join {{ ref('stg_workspaces') }} as workspaces using (workspace_id)

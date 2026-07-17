@@ -1,39 +1,48 @@
 with enriched as (
     select
-        invoice.invoice_key,
-        invoice.subscription_key,
-        {{ generate_surrogate_key(['invoice.workspace_id']) }} as workspace_key,
-        plan.plan_key,
-        invoice.invoice_id,
-        invoice.subscription_id,
-        invoice.workspace_id,
-        invoice.plan_id,
-        invoice.period_start,
-        invoice.period_end,
-        invoice.currency_code,
-        invoice.net_amount,
-        invoice.tax_amount,
-        invoice.gross_amount,
-        invoice.is_paid,
-        invoice.is_missing_currency,
-        invoice.is_negative_gross_amount,
-        invoice.has_amount_mismatch,
-        invoice.is_invalid_billing_period,
-        invoice.is_reused_id_across_workspaces,
-        not invoice.is_duplicate_invoice_key
-            and invoice.is_paid
-            and not invoice.is_missing_currency
-            and not invoice.is_negative_gross_amount
-            and not invoice.has_amount_mismatch
-            and not invoice.is_invalid_billing_period
+        invoices.invoice_key,
+        invoices.subscription_key,
+        workspaces.workspace_key,
+        plans.plan_key,
+        invoices.invoice_id,
+        invoices.subscription_id,
+        invoices.workspace_id,
+        invoices.plan_id,
+        invoices.billing_frequency,
+        invoices.issued_at,
+        invoices.due_at,
+        invoices.period_start,
+        invoices.period_end,
+        invoices.source_currency_code,
+        invoices.net_amount,
+        invoices.tax_amount,
+        invoices.gross_amount,
+        invoices.payment_status,
+        invoices.paid_at,
+        invoices.amount_reconciliation_difference,
+        invoices.is_missing_currency,
+        invoices.has_negative_amount,
+        invoices.has_amount_reconciliation_mismatch,
+        invoices.has_invalid_billing_period,
+        invoices.has_invalid_due_date,
+        invoices.has_invalid_payment_lifecycle,
+        invoices.payment_status = 'paid'
+            and not invoices.is_missing_currency
+            and not invoices.has_negative_amount
+            and not invoices.has_amount_reconciliation_mismatch
+            and not invoices.has_invalid_billing_period
+            and not invoices.has_invalid_due_date
+            and not invoices.has_invalid_payment_lifecycle
             as is_analytics_eligible,
-        invoice.loaded_at_utc
-    from {{ ref('stg_invoices') }} as invoice
-    inner join {{ ref('stg_plans') }} as plan using (plan_id)
+        invoices.loaded_at_utc
+    from {{ ref('stg_invoices') }} as invoices
+    inner join {{ ref('stg_workspaces') }} as workspaces using (workspace_id)
+    inner join {{ ref('stg_plans') }} as plans using (plan_id)
 )
 
 select
     *,
-    case when is_analytics_eligible then gross_amount else null end
-        as analytics_gross_amount
+    case when is_analytics_eligible then net_amount end as analytics_net_amount,
+    case when is_analytics_eligible then tax_amount end as analytics_tax_amount,
+    case when is_analytics_eligible then gross_amount end as analytics_gross_amount
 from enriched

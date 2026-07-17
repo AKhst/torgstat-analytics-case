@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: raw_data
-    description: Immutable-per-load B2B SaaS extracts loaded from validated CSV files.
+    description: Validated B2B SaaS CSV extracts loaded with immutable batch metadata.
     database: "{{ env_var('POSTGRES_DB', 'torgdb') }}"
     schema: "{{ env_var('RAW_SCHEMA', 'raw') }}"
     config:
@@ -11,115 +11,119 @@ sources:
         warn_after: {count: 24, period: hour}
         error_after: {count: 168, period: hour}
     tables:
-      - name: plans
-        description: Subscription plan reference data.
+      - name: workspaces
+        description: Current workspace records and billing defaults.
         columns:
-          - name: plan_id
-            data_tests: [not_null, unique]
-          - name: plan_name
-            data_tests: [not_null]
-          - name: _load_batch_id
-            data_tests: [not_null]
-          - name: _loaded_at_utc
-            data_tests: [not_null]
+          - {name: workspace_id, data_tests: [not_null, unique]}
+          - {name: billing_currency, data_tests: [not_null]}
+          - {name: _load_batch_id, data_tests: [not_null]}
+          - {name: _loaded_at_utc, data_tests: [not_null]}
+
+      - name: plans
+        description: Product plan reference data with monthly and annual prices.
+        columns:
+          - {name: plan_id, data_tests: [not_null, unique]}
+          - {name: plan_name, data_tests: [not_null]}
+          - {name: tier_rank, data_tests: [not_null, unique]}
+          - {name: _load_batch_id, data_tests: [not_null]}
+          - {name: _loaded_at_utc, data_tests: [not_null]}
 
       - name: users
-        description: Users associated with B2B workspaces.
+        description: Current users assigned to one workspace.
         columns:
-          - name: user_id
-            data_tests: [not_null, unique]
+          - {name: user_id, data_tests: [not_null, unique]}
           - name: workspace_id
-            data_tests: [not_null]
-          - name: _load_batch_id
-            data_tests: [not_null]
-          - name: _loaded_at_utc
-            data_tests: [not_null]
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments: {to: "source('raw_data', 'workspaces')", field: workspace_id}
+          - {name: _load_batch_id, data_tests: [not_null]}
+          - {name: _loaded_at_utc, data_tests: [not_null]}
 
       - name: sessions
-        description: User acquisition sessions and UTM attribution.
+        description: User sessions with first-touch attribution.
         columns:
-          - name: session_id
-            data_tests: [not_null, unique]
+          - {name: session_id, data_tests: [not_null, unique]}
           - name: user_id
             data_tests:
               - not_null
               - relationships:
-                  arguments:
-                    to: source('raw_data', 'users')
-                    field: user_id
-          - name: _load_batch_id
-            data_tests: [not_null]
-          - name: _loaded_at_utc
-            data_tests: [not_null]
+                  arguments: {to: "source('raw_data', 'users')", field: user_id}
+          - {name: _load_batch_id, data_tests: [not_null]}
+          - {name: _loaded_at_utc, data_tests: [not_null]}
 
       - name: subscriptions
-        description: Subscriptions at workspace and source-subscription grain.
-        data_tests:
-          - unique_combination_of_columns:
-              arguments:
-                combination_of_columns: [workspace_id, subscription_id]
+        description: Stable subscription lifecycles owned by workspaces.
         columns:
-          - name: subscription_id
-            data_tests: [not_null]
+          - {name: subscription_id, data_tests: [not_null, unique]}
           - name: workspace_id
-            data_tests: [not_null]
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments: {to: "source('raw_data', 'workspaces')", field: workspace_id}
+          - {name: _load_batch_id, data_tests: [not_null]}
+          - {name: _loaded_at_utc, data_tests: [not_null]}
+
+      - name: subscription_plan_history
+        description: Non-overlapping plan periods for subscriptions.
+        columns:
+          - {name: subscription_plan_period_id, data_tests: [not_null, unique]}
+          - name: subscription_id
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments: {to: "source('raw_data', 'subscriptions')", field: subscription_id}
           - name: plan_id
             data_tests:
               - not_null
               - relationships:
-                  arguments:
-                    to: source('raw_data', 'plans')
-                    field: plan_id
-          - name: _load_batch_id
-            data_tests: [not_null]
-          - name: _loaded_at_utc
-            data_tests: [not_null]
+                  arguments: {to: "source('raw_data', 'plans')", field: plan_id}
+          - {name: _load_batch_id, data_tests: [not_null]}
+          - {name: _loaded_at_utc, data_tests: [not_null]}
 
       - name: invoices
-        description: Invoices at workspace and source-invoice grain with injected quality issues.
-        data_tests:
-          - unique_combination_of_columns:
-              arguments:
-                combination_of_columns: [workspace_id, invoice_id]
+        description: Immutable billing snapshots with controlled quality defects.
         columns:
-          - name: invoice_id
-            data_tests: [not_null]
+          - {name: invoice_id, data_tests: [not_null, unique]}
           - name: subscription_id
-            data_tests: [not_null]
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments: {to: "source('raw_data', 'subscriptions')", field: subscription_id}
           - name: workspace_id
-            data_tests: [not_null]
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments: {to: "source('raw_data', 'workspaces')", field: workspace_id}
           - name: plan_id
             data_tests:
               - not_null
               - relationships:
-                  arguments:
-                    to: source('raw_data', 'plans')
-                    field: plan_id
-          - name: _load_batch_id
-            data_tests: [not_null]
-          - name: _loaded_at_utc
-            data_tests: [not_null]
+                  arguments: {to: "source('raw_data', 'plans')", field: plan_id}
+          - {name: _load_batch_id, data_tests: [not_null]}
+          - {name: _loaded_at_utc, data_tests: [not_null]}
 
       - name: events
         description: Product events recorded at workspace grain without a source event ID.
         columns:
           - name: workspace_id
-            data_tests: [not_null]
-          - name: event_date
-            data_tests: [not_null]
-          - name: _load_batch_id
-            data_tests: [not_null]
-          - name: _loaded_at_utc
-            data_tests: [not_null]
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments: {to: "source('raw_data', 'workspaces')", field: workspace_id}
+          - {name: event_date, data_tests: [not_null]}
+          - {name: _load_batch_id, data_tests: [not_null]}
+          - {name: _loaded_at_utc, data_tests: [not_null]}
 
       - name: fx_rates
-        description: Daily exchange-rate reference data used for multi-currency reporting.
+        description: Daily currency rates used for USD reporting.
+        data_tests:
+          - unique_combination_of_columns:
+              arguments: {combination_of_columns: [rate_date, base_currency, quote_currency]}
         columns:
-          - name: rate_date
-            data_tests: [not_null]
-          - name: base_currency
-            data_tests: [not_null]
-          - name: quote_currency
-            data_tests: [not_null]
-          - name: rate
-            data_tests: [not_null]
+          - {name: rate_date, data_tests: [not_null]}
+          - {name: base_currency, data_tests: [not_null]}
+          - {name: quote_currency, data_tests: [not_null]}
+          - {name: rate, data_tests: [not_null]}
+          - {name: _load_batch_id, data_tests: [not_null]}
+          - {name: _loaded_at_utc, data_tests: [not_null]}

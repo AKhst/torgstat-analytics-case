@@ -1,79 +1,78 @@
 # Torgstat SaaS Analytics Case
 
-This repository is an analytics engineering case study for a synthetic B2B subscription SaaS product. It implements local data generation, loading into PostgreSQL, a tested dbt staging layer, and BI-oriented marts.
-
-The intended data flow is:
+This repository is an analytics-engineering case study for a synthetic B2B subscription SaaS product. It models workspace ownership, user acquisition, subscription and plan history, invoice lifecycle, product events, multi-currency reporting, and controlled source-data defects.
 
 ```text
-Synthetic ERP/billing data -> CSV files -> PostgreSQL raw schema -> dbt staging -> marts -> BI reports
+Synthetic source extracts
+        ↓
+Validated CSV contracts
+        ↓
+PostgreSQL raw schema
+        ↓
+dbt staging views
+        ↓
+dbt dimensions, facts, and billing marts
+        ↓
+Power BI semantic model (planned)
 ```
-
-The CSV generation, PostgreSQL raw load, seven dbt staging views, and nine marts models are implemented. Power BI artifacts are not included yet.
 
 ## Technology Stack
 
+- Python 3.11+, pandas, SQLAlchemy, and psycopg2
 - PostgreSQL 15 in Docker Compose
-- Python, pandas, SQLAlchemy, and psycopg2
-- dbt Core with the PostgreSQL adapter
-- Bash scripts for database initialization and health checks
-- Power BI is planned for the reporting layer
+- dbt Core 1.10 with the PostgreSQL adapter
+- Bash database initialization and health checks
+- Power BI planned for the reporting layer
 
 ## Repository Structure
 
 ```text
 .
-├── data/                         Generated CSV files and dataset documentation
+├── data/                         Generated CSV extracts and dataset documentation
+├── docs/                         Business rules, contracts, and change workflow
 ├── init/                         PostgreSQL first-run initialization
-├── report/                       Placeholder for future report artifacts
+├── report/                       Future Power BI project and exports
 ├── scripts/
-│   ├── generate_data.py          Generates the synthetic SaaS dataset
-│   ├── fetch_fx_rates.py          Fetches historical FX rates for invoices
-│   └── import_to_postgres.py      Replaces tables in the raw schema
+│   ├── generate_data.py          Deterministic v1 dataset generator
+│   ├── fetch_fx_rates.py         Historical FX-rate ingestion
+│   └── import_to_postgres.py     Validated raw-schema loader
 ├── src/torgstat/                 Reusable Python package code
-├── torgstat_dbt/
-│   ├── dbt_project.yml           dbt project configuration
-│   └── models/                   Sources, staging models, and marts
-├── check_postgres.sh             Checks the container, schemas, and roles
-├── docker-compose.yml            Local PostgreSQL service
-├── requirements.txt              Python and dbt dependencies
-└── setup.py                      Local package metadata
+├── torgstat_dbt/                 dbt sources, staging, marts, tests, and macros
+├── check_postgres.sh             Local database health checks
+└── docker-compose.yml            PostgreSQL service
 ```
 
-## Implemented Data Model
+## Data Model
 
-The generator creates six core CSV files. FX rates are stored in a seventh file and can be refreshed separately with `scripts/fetch_fx_rates.py`:
+The deterministic generator uses seed `42` and creates eight core files. FX rates are refreshed separately.
 
-| Dataset | Typical row count | Main relationship |
+| Dataset | Rows | Grain |
 | --- | ---: | --- |
-| `plans` | 4 | Referenced by subscriptions and invoices |
-| `users` | 2,500 | Belongs to a workspace |
-| `sessions` | 1,000 | References a user |
-| `subscriptions` | 200 | Belongs to a workspace and plan |
-| `invoices` | About 2,280 | References a subscription, workspace, and plan |
-| `events` | 5,000 | Belongs to a workspace |
-| `fx_rates` | 1,734 | Historical rates used to convert EUR and GBP invoice amounts to USD |
+| `workspaces` | 200 | One current workspace |
+| `plans` | 4 | One product plan |
+| `users` | 2,500 | One current user |
+| `sessions` | 1,297 | One user session |
+| `subscriptions` | 180 | One stable subscription lifecycle |
+| `subscription_plan_history` | 234 | One plan period for a subscription |
+| `invoices` | 935 | One billing-period invoice |
+| `events` | 5,000 | One workspace event occurrence |
+| `fx_rates` | 1,734 currently | One daily currency-pair rate |
 
-Generation is deterministic because both Python and NumPy use seed `42`. See [data/README.md](data/README.md) for the exact columns and injected data-quality issues.
+```text
+workspaces 1 ─── * users 1 ─── * sessions
+     │
+     ├── * subscriptions 1 ─── * subscription_plan_history * ─── 1 plans
+     │            └── * invoices ──────────────────────────────── 1 plans
+     └── * events
+```
 
-PostgreSQL uses three schemas configured through environment variables:
+Every workspace has an owner record, and every active workspace has exactly one active owner. A workspace may exist without a subscription. Plan upgrades and downgrades preserve `subscription_id` and create a new non-overlapping history period.
 
-- `raw`: tables loaded directly from CSV files
-- `staging`: intended for cleaned and typed dbt views
-- `marts`: BI-ready fact, dimension, billing, and converted invoice models
-
-All three layers are implemented. dbt grants `SELECT` on created marts relations to `READONLY_USER` through a post-hook.
+The approved field-level contracts and business decisions are documented in `docs/data_contract.md` and `docs/business_rules.md`.
 
 ## Quick Start
 
-### 1. Install prerequisites
-
-You need:
-
-- Python 3.11 or later
-- Docker with Docker Compose
-- `nc` (netcat) for `check_postgres.sh`
-
-Create and activate a virtual environment:
+### 1. Install dependencies
 
 ```bash
 python3 -m venv .venv
@@ -83,30 +82,13 @@ pip install -r requirements.txt
 
 ### 2. Configure the environment
 
-Create `.env` in the repository root. All values below are required by the current Docker and initialization configuration:
+Copy `.env.example` to `.env` and set PostgreSQL, schema, application-user, and read-only-user credentials.
 
-```dotenv
-POSTGRES_DB=torgdb
-POSTGRES_USER=torgadmin
-POSTGRES_PASSWORD=change_admin_password
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5433
-POSTGRES_SCHEMA=raw
-
-RAW_SCHEMA=raw
-STAGING_SCHEMA=staging
-MARTS_SCHEMA=marts
-
-APP_DB_USER=appuser
-APP_DB_PASSWORD=change_app_password
-
-READONLY_USER=readonly
-READONLY_PASSWORD=change_readonly_password
-
-PYTHONPATH=src
+```bash
+cp .env.example .env
 ```
 
-Use simple PostgreSQL identifiers for database, schema, and role names. Do not commit `.env`.
+Do not commit `.env`.
 
 ### 3. Start PostgreSQL
 
@@ -115,66 +97,31 @@ docker compose up -d
 ./check_postgres.sh
 ```
 
-The official PostgreSQL image runs `init/init.sh` only when `postgres_data/` is empty. If that directory already contains a database, restarting the container does not rerun initialization or apply changed environment variables. See [init/README.md](init/README.md) for reset and troubleshooting instructions.
+The official image runs `init/init.sh` only for an empty `postgres_data/` directory. See `init/README.md` before resetting an existing local database.
 
-### 4. Generate the CSV files
+### 4. Generate source files
 
 ```bash
 python scripts/generate_data.py
 ```
 
-This writes the six core files (`plans.csv`, `users.csv`, `sessions.csv`, `subscriptions.csv`, `invoices.csv`, and `events.csv`) to `data/`.
+The generator validates global identifiers, workspace ownership, first-session rules, and plan-period integrity before writing CSV files.
 
-To fetch or refresh historical FX rates used for invoice conversion:
+Refresh FX rates when network access is available:
 
 ```bash
 python scripts/fetch_fx_rates.py
 ```
 
-This uses the Frankfurter API and writes `data/fx_rates.csv`. The script requires network access.
-
-### 5. Load the raw schema
+### 5. Load raw tables
 
 ```bash
 python scripts/import_to_postgres.py
 ```
 
-The importer connects as `APP_DB_USER`. For every available CSV file, it drops the corresponding `raw` table with `CASCADE` and recreates it from the DataFrame. Rerunning the import therefore removes dependent dbt views.
+The importer requires all contracted files, validates exact column order, adds load lineage, and replaces each raw table. Replacement uses `DROP TABLE ... CASCADE`, so dbt relations must be rebuilt after a load.
 
-Inspect the loaded tables with:
-
-```bash
-docker exec -it torgstat_postgres \
-  psql -U torgadmin -d torgdb \
-  -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
-```
-
-## dbt Status
-
-The dbt project is located in `torgstat_dbt/` and references seven tables in `raw`. Its workspace-centric staging layer contains:
-
-- `stg_plans`: typed plan attributes and billing-period validation;
-- `stg_users`: user-to-workspace membership, safe signup-date parsing, GDPR/deletion fields, and quality flags;
-- `stg_sessions`: typed acquisition sessions and normalized UTM fields;
-- `stg_subscriptions`: workspace subscriptions with normalized status and duplicate-ID flags;
-- `stg_invoices`: workspace invoices with duplicate, currency, amount, and billing-period quality flags;
-- `stg_events`: normalized workspace-level product events.
-- `stg_fx_rates`: typed daily FX rates with normalized currency codes.
-
-The marts layer contains conformed dimensions, subscription/invoice/session/event facts, a monthly workspace billing aggregate, and `fct_invoices_converted`, which converts eligible EUR/GBP/USD invoice amounts to USD using the latest available rate on or before the invoice period.
-
-The project includes an environment-based `profiles.yml` and schema naming macros, so staging and marts models are created directly in the configured schemas.
-
-Run all models and tests from the repository root:
-
-```bash
-set -a
-source .env
-set +a
-dbt build --project-dir torgstat_dbt --profiles-dir torgstat_dbt
-```
-
-If the `dbt` executable resolves to dbt Fusion, which does not currently enable PostgreSQL by default, invoke the dbt Core installation from the virtual environment:
+### 6. Build dbt models
 
 ```bash
 set -a
@@ -185,22 +132,49 @@ set +a
   --profiles-dir torgstat_dbt
 ```
 
-Known limitations:
+Generate lineage and model documentation with:
 
-- duplicate source subscription and invoice identifiers are retained and flagged, not silently removed;
-- events do not have a source event identifier;
-- there is no dedicated workspace source table, so workspace dimensions must be derived in marts;
-- the converted invoice model leaves amounts as `NULL` when the currency is missing or no FX rate is available;
-- the reporting layer has no Power BI semantic model or dashboard yet.
+```bash
+.venv/bin/python -m dbt.cli.main docs generate \
+  --project-dir torgstat_dbt \
+  --profiles-dir torgstat_dbt
+```
 
-## Reporting Status
+## dbt Layers
 
-The `report/` directory is a placeholder. There is currently no `.pbip`, Power BI semantic model, PDF, or presentation in the repository. The intended BI account is `READONLY_USER`, restricted to the marts schema. dbt grants it `SELECT` on marts created by the project; default privileges may still be needed for tables created outside dbt.
+The project defines nine raw sources, nine staging views, and ten marts models.
 
-## Troubleshooting
+Staging performs typing, normalization, source-lineage propagation, and explicit quality flags. Important controls include invalid user timestamps, lifecycle consistency, invoice amount reconciliation, payment lifecycle, first-touch attribution, and plan-period validity.
 
-- **Schemas are missing:** check `docker logs torgstat_postgres`. Confirm that all schema variables exist in `.env` and that `postgres_data/` was empty on first startup.
-- **Initialization changes have no effect:** stop PostgreSQL and initialize a fresh data directory; entrypoint scripts never rerun against an existing cluster.
-- **Raw import cannot connect:** confirm `POSTGRES_HOST=localhost`, the published `POSTGRES_PORT`, and the `APP_DB_USER` credentials.
-- **dbt cannot connect:** activate the virtual environment, load `.env`, and confirm PostgreSQL is reachable on `POSTGRES_HOST:POSTGRES_PORT`.
-- **BI user cannot read new marts tables:** grant access after model creation or configure PostgreSQL default privileges as described in `init/README.md`.
+Marts contain:
+
+- `dim_workspaces`, `dim_users`, and `dim_plans`;
+- `fct_subscriptions` and `fct_subscription_plan_history`;
+- `fct_invoices` and `fct_invoices_converted`;
+- `fct_sessions` and `fct_events`;
+- `mart_workspace_monthly_billing`.
+
+Singular dbt tests enforce workspace owner integrity, session temporal consistency, exactly one earliest first session, UTM placement, non-overlapping subscription and plan periods, invoice snapshots, structural invoice quality, and the absence of Free-plan invoices.
+
+## Controlled Data Quality
+
+The generator intentionally creates small, documented defect populations:
+
+- 1% invalid raw user creation timestamps;
+- approximately 2% missing user countries;
+- missing first-touch source values for invited users and a small source-loss scenario;
+- approximately 2% missing invoice currencies;
+- approximately 1% invoice amount reconciliation mismatches;
+- approximately 3% failed invoice payments.
+
+Accidental identifier collisions, negative invoice amounts, random first-session flags, and sessions before user creation are not generated in v1.
+
+## Current Limitations
+
+- Power BI artifacts are not implemented yet.
+- Raw loading replaces tables instead of preserving append-only batch history.
+- Invoice-currency fallback to workspace default and the authoritative FX conversion date remain separate draft business decisions.
+- Recognized-revenue, MRR, and ARR marts are not implemented yet.
+- Runtime `dbt build` requires a running PostgreSQL instance; static parsing can run without Docker.
+
+Changes must follow `docs/change_workflow.md`: business rule → contract → generator → importer → source → staging → marts → tests → docs → visualization.
