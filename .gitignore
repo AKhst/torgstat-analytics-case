@@ -49,6 +49,11 @@ dbt_packages/
 logs/
 dbt_logs/
 
+# Power BI local state and caches
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+**/.pbi/unappliedChanges.json
+
 # Environment variables
 .env
 .venv

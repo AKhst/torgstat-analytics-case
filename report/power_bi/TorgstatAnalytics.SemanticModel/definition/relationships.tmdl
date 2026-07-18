@@ -1,0 +1,57 @@
+relationship 'Users to Workspaces'
+	fromColumn: dim_users.workspace_key
+	toColumn: dim_workspaces.workspace_key
+
+relationship 'Subscriptions to Workspaces'
+	fromColumn: fct_subscriptions.workspace_key
+	toColumn: dim_workspaces.workspace_key
+
+relationship 'Plan History to Workspaces'
+	fromColumn: fct_subscription_plan_history.workspace_key
+	toColumn: dim_workspaces.workspace_key
+
+relationship 'Plan History to Plans'
+	fromColumn: fct_subscription_plan_history.plan_key
+	toColumn: dim_plans.plan_key
+
+relationship 'Invoices to Workspaces'
+	fromColumn: fct_invoices_converted.workspace_key
+	toColumn: dim_workspaces.workspace_key
+
+relationship 'Invoices to Plans'
+	fromColumn: fct_invoices_converted.plan_key
+	toColumn: dim_plans.plan_key
+
+relationship 'Invoices to Issue Date'
+	fromColumn: fct_invoices_converted.issued_at
+	toColumn: dim_date.date_day
+
+relationship 'Sessions to Users'
+	fromColumn: fct_sessions.user_key
+	toColumn: dim_users.user_key
+
+/// Inactive role-playing date relationship used by USERELATIONSHIP().
+relationship 'Sessions to Session Date'
+	isActive: false
+	fromColumn: fct_sessions.started_date
+	toColumn: dim_date.date_day
+
+relationship 'Events to Workspaces'
+	fromColumn: fct_events.workspace_key
+	toColumn: dim_workspaces.workspace_key
+
+/// Inactive role-playing date relationship used by USERELATIONSHIP().
+relationship 'Events to Event Date'
+	isActive: false
+	fromColumn: fct_events.event_date
+	toColumn: dim_date.date_day
+
+relationship 'Monthly Billing to Workspaces'
+	fromColumn: mart_workspace_monthly_billing.workspace_key
+	toColumn: dim_workspaces.workspace_key
+
+/// Inactive role-playing date relationship used by USERELATIONSHIP().
+relationship 'Monthly Billing to Billing Month'
+	isActive: false
+	fromColumn: mart_workspace_monthly_billing.billing_month
+	toColumn: dim_date.date_day

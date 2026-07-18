@@ -6,6 +6,7 @@ select
     sessions.user_id,
     users.workspace_id,
     sessions.started_at,
+    sessions.started_at::date as started_date,
     sessions.utm_source,
     sessions.utm_medium,
     sessions.is_first_session,

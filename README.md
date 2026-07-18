@@ -13,7 +13,7 @@ dbt staging views
         ↓
 dbt dimensions, facts, and billing marts
         ↓
-Power BI semantic model (planned)
+Power BI PBIP project: TMDL model and PBIR report
 ```
 
 ## Technology Stack
@@ -22,7 +22,7 @@ Power BI semantic model (planned)
 - PostgreSQL 15 in Docker Compose
 - dbt Core 1.10 with the PostgreSQL adapter
 - Bash database initialization and health checks
-- Power BI planned for the reporting layer
+- Power BI for the reporting layer
 
 ## Repository Structure
 
@@ -31,11 +31,13 @@ Power BI semantic model (planned)
 ├── data/                         Generated CSV extracts and dataset documentation
 ├── docs/                         Business rules, contracts, and change workflow
 ├── init/                         PostgreSQL first-run initialization
-├── report/                       Future Power BI project and exports
+├── report/                       Version-controlled Power BI PBIP project and blueprint
 ├── scripts/
 │   ├── generate_data.py          Deterministic v1 dataset generator
 │   ├── fetch_fx_rates.py         Historical FX-rate ingestion
-│   └── import_to_postgres.py     Validated raw-schema loader
+│   ├── import_to_postgres.py     Validated raw-schema loader
+│   ├── run_local_pipeline.sh     End-to-end local pipeline
+│   └── validate_power_bi_project.py  PBIP/TMDL structural checks
 ├── src/torgstat/                 Reusable Python package code
 ├── torgstat_dbt/                 dbt sources, staging, marts, tests, and macros
 ├── check_postgres.sh             Local database health checks
@@ -56,7 +58,7 @@ The deterministic generator uses seed `42` and creates eight core files. FX rate
 | `subscription_plan_history` | 234 | One plan period for a subscription |
 | `invoices` | 935 | One billing-period invoice |
 | `events` | 5,000 | One workspace event occurrence |
-| `fx_rates` | 1,734 currently | One daily currency-pair rate |
+| `fx_rates` | Refreshed separately | One daily currency-pair rate |
 
 ```text
 workspaces 1 ─── * users 1 ─── * sessions
@@ -89,6 +91,21 @@ cp .env.example .env
 ```
 
 Do not commit `.env`.
+
+`dbt` reads variables from the process environment, not directly from `.env`. The
+`set -a` / `set +a` pair below exports every sourced value to child processes.
+
+### Run the complete local pipeline
+
+```bash
+./scripts/run_local_pipeline.sh
+```
+
+After FX rates have already been downloaded, a faster repeat is available:
+
+```bash
+./scripts/run_local_pipeline.sh --skip-fx
+```
 
 ### 3. Start PostgreSQL
 
@@ -142,17 +159,19 @@ Generate lineage and model documentation with:
 
 ## dbt Layers
 
-The project defines nine raw sources, nine staging views, and ten marts models.
+The project defines nine raw sources, nine staging views, and eleven marts models.
 
 Staging performs typing, normalization, source-lineage propagation, and explicit quality flags. Important controls include invalid user timestamps, lifecycle consistency, invoice amount reconciliation, payment lifecycle, first-touch attribution, and plan-period validity.
 
 Marts contain:
 
-- `dim_workspaces`, `dim_users`, and `dim_plans`;
+- `dim_date`, `dim_workspaces`, `dim_users`, and `dim_plans`;
 - `fct_subscriptions` and `fct_subscription_plan_history`;
 - `fct_invoices` and `fct_invoices_converted`;
 - `fct_sessions` and `fct_events`;
 - `mart_workspace_monthly_billing`.
+
+Power BI reporting starts from the PBIP project in `report/power_bi/`. The semantic model, relationships, Power Query partitions, and DAX measures are stored as TMDL. Power BI Desktop writes pages and visuals as PBIR JSON files, which are committed to Git while local caches remain ignored.
 
 Singular dbt tests enforce workspace owner integrity, session temporal consistency, exactly one earliest first session, UTM placement, non-overlapping subscription and plan periods, invoice snapshots, structural invoice quality, and the absence of Free-plan invoices.
 
@@ -171,7 +190,7 @@ Accidental identifier collisions, negative invoice amounts, random first-session
 
 ## Current Limitations
 
-- Power BI artifacts are not implemented yet.
+- The PBIP semantic model is source-controlled, while the first PBIR report pages still need to be authored and saved through Power BI Desktop.
 - Raw loading replaces tables instead of preserving append-only batch history.
 - Invoice-currency fallback to workspace default and the authoritative FX conversion date remain separate draft business decisions.
 - Recognized-revenue, MRR, and ARR marts are not implemented yet.

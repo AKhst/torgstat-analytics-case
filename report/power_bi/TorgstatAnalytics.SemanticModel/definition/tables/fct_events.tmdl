@@ -1,0 +1,47 @@
+table fct_events
+
+	column event_key
+		dataType: string
+		isKey
+		sourceColumn: event_key
+
+	column workspace_key
+		dataType: string
+		isHidden
+		sourceColumn: workspace_key
+
+	column workspace_id
+		dataType: string
+		sourceColumn: workspace_id
+
+	column event_date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: event_date
+
+	column event_name
+		dataType: string
+		sourceColumn: event_name
+
+	column event_properties_json
+		dataType: string
+		isHidden
+		sourceColumn: event_properties_json
+
+	column event_occurrence_number
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: event_occurrence_number
+
+	column is_duplicate_event_payload
+		dataType: boolean
+		sourceColumn: is_duplicate_event_payload
+
+	partition fct_events = m
+		mode: import
+		source =
+			let
+				Source = PostgreSQL.Database(#"Server", #"Database"),
+				Navigation = Source{[Schema="marts", Item="fct_events"]}[Data]
+			in
+				Navigation

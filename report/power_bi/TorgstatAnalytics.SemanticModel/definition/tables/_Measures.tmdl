@@ -1,0 +1,272 @@
+table _Measures
+	isHidden
+
+	/// Eligible invoice net amount converted to USD.
+	measure 'Net Revenue USD' = SUM ( fct_invoices_converted[analytics_net_amount_usd] )
+		formatString: \$#,##0.00
+		displayFolder: Revenue
+
+	/// Eligible invoice tax amount converted to USD.
+	measure 'Tax Revenue USD' = SUM ( fct_invoices_converted[analytics_tax_amount_usd] )
+		formatString: \$#,##0.00
+		displayFolder: Revenue
+
+	/// Eligible invoice gross amount converted to USD.
+	measure 'Gross Revenue USD' = SUM ( fct_invoices_converted[analytics_gross_amount_usd] )
+		formatString: \$#,##0.00
+		displayFolder: Revenue
+
+	measure 'Paid Net Revenue USD' = ```
+			CALCULATE (
+			    [Net Revenue USD],
+			    fct_invoices_converted[payment_status] = "paid"
+			)
+			```
+		formatString: \$#,##0.00
+		displayFolder: Revenue
+
+	measure 'Open Net Revenue USD' = ```
+			CALCULATE (
+			    [Net Revenue USD],
+			    fct_invoices_converted[payment_status] <> "paid"
+			)
+			```
+		formatString: \$#,##0.00
+		displayFolder: Revenue
+
+	measure 'Average Invoice Net USD' = DIVIDE ( [Net Revenue USD], [Eligible Invoices] )
+		formatString: \$#,##0.00
+		displayFolder: Revenue
+
+	measure 'Revenue MoM %' = ```
+			VAR _previousMonthRevenue =
+			    CALCULATE (
+			        [Net Revenue USD],
+			        DATEADD ( dim_date[date_day], -1, MONTH )
+			    )
+			RETURN
+			    DIVIDE ( [Net Revenue USD] - _previousMonthRevenue, _previousMonthRevenue )
+			```
+		formatString: 0.00%
+		displayFolder: Revenue
+
+	measure 'Revenue YTD USD' = TOTALYTD ( [Net Revenue USD], dim_date[date_day] )
+		formatString: \$#,##0.00
+		displayFolder: Revenue
+
+	measure Invoices = DISTINCTCOUNT ( fct_invoices_converted[invoice_key] )
+		formatString: #,##0
+		displayFolder: Invoices
+
+	measure 'Eligible Invoices' = ```
+			CALCULATE (
+			    [Invoices],
+			    fct_invoices_converted[is_analytics_eligible] = TRUE ()
+			)
+			```
+		formatString: #,##0
+		displayFolder: Invoices
+
+	measure 'Paid Invoices' = ```
+			CALCULATE (
+			    [Invoices],
+			    fct_invoices_converted[payment_status] = "paid"
+			)
+			```
+		formatString: #,##0
+		displayFolder: Invoices
+
+	measure 'Failed Invoices' = ```
+			CALCULATE (
+			    [Invoices],
+			    fct_invoices_converted[payment_status] = "failed"
+			)
+			```
+		formatString: #,##0
+		displayFolder: Invoices
+
+	measure 'Payment Success Rate' = DIVIDE ( [Paid Invoices], [Invoices] )
+		formatString: 0.00%
+		displayFolder: Invoices
+
+	measure Subscriptions = DISTINCTCOUNT ( fct_subscriptions[subscription_key] )
+		formatString: #,##0
+		displayFolder: Subscriptions
+
+	measure 'Active Subscriptions' = ```
+			CALCULATE (
+			    [Subscriptions],
+			    fct_subscriptions[subscription_status] = "active"
+			)
+			```
+		formatString: #,##0
+		displayFolder: Subscriptions
+
+	measure 'Canceled Subscriptions' = ```
+			CALCULATE (
+			    [Subscriptions],
+			    fct_subscriptions[subscription_status] = "canceled"
+			)
+			```
+		formatString: #,##0
+		displayFolder: Subscriptions
+
+	measure 'Paid Workspaces' = DISTINCTCOUNT ( fct_subscriptions[workspace_key] )
+		formatString: #,##0
+		displayFolder: Subscriptions
+
+	measure 'Active Paid Workspaces' = ```
+			CALCULATE (
+			    DISTINCTCOUNT ( fct_subscriptions[workspace_key] ),
+			    fct_subscriptions[subscription_status] = "active"
+			)
+			```
+		formatString: #,##0
+		displayFolder: Subscriptions
+
+	measure 'Revenue Per Paid Workspace USD' = DIVIDE ( [Net Revenue USD], [Paid Workspaces] )
+		formatString: \$#,##0.00
+		displayFolder: Subscriptions
+
+	measure Workspaces = DISTINCTCOUNT ( dim_workspaces[workspace_key] )
+		formatString: #,##0
+		displayFolder: Acquisition
+
+	measure 'Active Workspaces' = ```
+			CALCULATE (
+			    [Workspaces],
+			    dim_workspaces[is_active] = TRUE ()
+			)
+			```
+		formatString: #,##0
+		displayFolder: Acquisition
+
+	measure Users = DISTINCTCOUNT ( dim_users[user_key] )
+		formatString: #,##0
+		displayFolder: Acquisition
+
+	measure 'Active Users' = ```
+			CALCULATE (
+			    [Users],
+			    dim_users[is_active] = TRUE ()
+			)
+			```
+		formatString: #,##0
+		displayFolder: Acquisition
+
+	measure Sessions = DISTINCTCOUNT ( fct_sessions[session_key] )
+		formatString: #,##0
+		displayFolder: Acquisition
+
+	measure 'First Sessions' = ```
+			CALCULATE (
+			    [Sessions],
+			    fct_sessions[is_first_session] = TRUE ()
+			)
+			```
+		formatString: #,##0
+		displayFolder: Acquisition
+
+	measure 'Sessions By Session Date' = ```
+			CALCULATE (
+			    [Sessions],
+			    USERELATIONSHIP ( dim_date[date_day], fct_sessions[started_date] )
+			)
+			```
+		formatString: #,##0
+		displayFolder: Acquisition
+
+	measure 'First-Touch Source Loss' = ```
+			CALCULATE (
+			    [First Sessions],
+			    fct_sessions[is_missing_first_touch_source] = TRUE ()
+			)
+			```
+		formatString: #,##0
+		displayFolder: Acquisition
+
+	measure Events = DISTINCTCOUNT ( fct_events[event_key] )
+		formatString: #,##0
+		displayFolder: Product Usage
+
+	measure 'Events By Event Date' = ```
+			CALCULATE (
+			    [Events],
+			    USERELATIONSHIP ( dim_date[date_day], fct_events[event_date] )
+			)
+			```
+		formatString: #,##0
+		displayFolder: Product Usage
+
+	measure 'Duplicate Event Payloads' = ```
+			CALCULATE (
+			    [Events],
+			    fct_events[is_duplicate_event_payload] = TRUE ()
+			)
+			```
+		formatString: #,##0
+		displayFolder: Product Usage
+
+	measure 'Events Per Active Workspace' = DIVIDE ( [Events], [Active Workspaces] )
+		formatString: #,##0.00
+		displayFolder: Product Usage
+
+	measure 'Missing Invoice Currency Count' = ```
+			CALCULATE (
+			    [Invoices],
+			    fct_invoices_converted[is_missing_currency] = TRUE ()
+			)
+			```
+		formatString: #,##0
+		displayFolder: Data Quality
+
+	measure 'Invoice Amount Mismatch Count' = ```
+			CALCULATE (
+			    [Invoices],
+			    fct_invoices_converted[has_amount_reconciliation_mismatch] = TRUE ()
+			)
+			```
+		formatString: #,##0
+		displayFolder: Data Quality
+
+	measure 'Invalid User Created At Count' = ```
+			CALCULATE (
+			    [Users],
+			    dim_users[is_invalid_created_at] = TRUE ()
+			)
+			```
+		formatString: #,##0
+		displayFolder: Data Quality
+
+	measure 'Missing User Country Count' = ```
+			CALCULATE (
+			    [Users],
+			    dim_users[is_missing_country] = TRUE ()
+			)
+			```
+		formatString: #,##0
+		displayFolder: Data Quality
+
+	measure 'FX Covered Eligible Invoices' = ```
+			CALCULATE (
+			    [Eligible Invoices],
+			    NOT ISBLANK ( fct_invoices_converted[fx_rate_to_usd] )
+			        || fct_invoices_converted[source_currency_code] = "USD"
+			)
+			```
+		formatString: #,##0
+		displayFolder: Data Quality
+
+	measure 'FX Coverage Rate' = DIVIDE ( [FX Covered Eligible Invoices], [Eligible Invoices] )
+		formatString: 0.00%
+		displayFolder: Data Quality
+
+	column Value
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: [Value]
+
+	partition _Measures = calculated
+		mode: import
+		source = ROW ( "Value", 1 )

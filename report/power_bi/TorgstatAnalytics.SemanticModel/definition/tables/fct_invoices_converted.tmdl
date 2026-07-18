@@ -1,0 +1,174 @@
+table fct_invoices_converted
+
+	column invoice_key
+		dataType: string
+		isKey
+		sourceColumn: invoice_key
+
+	column subscription_key
+		dataType: string
+		isHidden
+		sourceColumn: subscription_key
+
+	column workspace_key
+		dataType: string
+		isHidden
+		sourceColumn: workspace_key
+
+	column plan_key
+		dataType: string
+		isHidden
+		sourceColumn: plan_key
+
+	column invoice_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: invoice_id
+
+	column subscription_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: subscription_id
+
+	column workspace_id
+		dataType: string
+		sourceColumn: workspace_id
+
+	column plan_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: plan_id
+
+	column billing_frequency
+		dataType: string
+		sourceColumn: billing_frequency
+
+	column issued_at
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: issued_at
+
+	column due_at
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: due_at
+
+	column period_start
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: period_start
+
+	column period_end
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: period_end
+
+	column source_currency_code
+		dataType: string
+		sourceColumn: source_currency_code
+
+	column net_amount
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: net_amount
+
+	column tax_amount
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: tax_amount
+
+	column gross_amount
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: gross_amount
+
+	column payment_status
+		dataType: string
+		sourceColumn: payment_status
+
+	column paid_at
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: paid_at
+
+	column amount_reconciliation_difference
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: amount_reconciliation_difference
+
+	column is_missing_currency
+		dataType: boolean
+		sourceColumn: is_missing_currency
+
+	column has_negative_amount
+		dataType: boolean
+		sourceColumn: has_negative_amount
+
+	column has_amount_reconciliation_mismatch
+		dataType: boolean
+		sourceColumn: has_amount_reconciliation_mismatch
+
+	column has_invalid_billing_period
+		dataType: boolean
+		sourceColumn: has_invalid_billing_period
+
+	column has_invalid_due_date
+		dataType: boolean
+		sourceColumn: has_invalid_due_date
+
+	column has_invalid_payment_lifecycle
+		dataType: boolean
+		sourceColumn: has_invalid_payment_lifecycle
+
+	column is_analytics_eligible
+		dataType: boolean
+		sourceColumn: is_analytics_eligible
+
+	column analytics_net_amount
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: analytics_net_amount
+
+	column analytics_tax_amount
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: analytics_tax_amount
+
+	column analytics_gross_amount
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: analytics_gross_amount
+
+	column fx_rate_to_usd
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: fx_rate_to_usd
+
+	column fx_rate_date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: fx_rate_date
+
+	column analytics_net_amount_usd
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: analytics_net_amount_usd
+
+	column analytics_tax_amount_usd
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: analytics_tax_amount_usd
+
+	column analytics_gross_amount_usd
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: analytics_gross_amount_usd
+
+	partition fct_invoices_converted = m
+		mode: import
+		source =
+			let
+				Source = PostgreSQL.Database(#"Server", #"Database"),
+				Navigation = Source{[Schema="marts", Item="fct_invoices_converted"]}[Data]
+			in
+				Navigation

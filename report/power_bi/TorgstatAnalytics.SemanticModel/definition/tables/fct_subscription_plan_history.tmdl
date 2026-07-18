@@ -1,0 +1,71 @@
+table fct_subscription_plan_history
+
+	column subscription_plan_period_key
+		dataType: string
+		isKey
+		sourceColumn: subscription_plan_period_key
+
+	column subscription_key
+		dataType: string
+		isHidden
+		sourceColumn: subscription_key
+
+	column workspace_key
+		dataType: string
+		isHidden
+		sourceColumn: workspace_key
+
+	column plan_key
+		dataType: string
+		isHidden
+		sourceColumn: plan_key
+
+	column subscription_plan_period_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: subscription_plan_period_id
+
+	column subscription_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: subscription_id
+
+	column workspace_id
+		dataType: string
+		sourceColumn: workspace_id
+
+	column plan_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: plan_id
+
+	column billing_frequency
+		dataType: string
+		sourceColumn: billing_frequency
+
+	column valid_from
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: valid_from
+
+	column valid_to
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: valid_to
+
+	column change_type
+		dataType: string
+		sourceColumn: change_type
+
+	column has_invalid_period
+		dataType: boolean
+		sourceColumn: has_invalid_period
+
+	partition fct_subscription_plan_history = m
+		mode: import
+		source =
+			let
+				Source = PostgreSQL.Database(#"Server", #"Database"),
+				Navigation = Source{[Schema="marts", Item="fct_subscription_plan_history"]}[Data]
+			in
+				Navigation

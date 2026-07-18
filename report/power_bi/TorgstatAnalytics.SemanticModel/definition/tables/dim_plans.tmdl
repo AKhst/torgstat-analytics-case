@@ -1,0 +1,50 @@
+table dim_plans
+
+	column plan_key
+		dataType: string
+		isHidden
+		isKey
+		sourceColumn: plan_key
+
+	column plan_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: plan_id
+
+	column plan_name
+		dataType: string
+		sortByColumn: tier_rank
+		sourceColumn: plan_name
+
+	column tier_rank
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: tier_rank
+
+	column monthly_price
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: monthly_price
+
+	column annual_price
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: annual_price
+
+	column is_active
+		dataType: boolean
+		sourceColumn: is_active
+
+	column is_free_plan
+		dataType: boolean
+		sourceColumn: is_free_plan
+
+	partition dim_plans = m
+		mode: import
+		source =
+			let
+				Source = PostgreSQL.Database(#"Server", #"Database"),
+				Navigation = Source{[Schema="marts", Item="dim_plans"]}[Data]
+			in
+				Navigation

@@ -1,0 +1,84 @@
+table dim_workspaces
+
+	column workspace_key
+		dataType: string
+		isHidden
+		isKey
+		sourceColumn: workspace_key
+
+	column workspace_id
+		dataType: string
+		sourceColumn: workspace_id
+
+	column workspace_name
+		dataType: string
+		sourceColumn: workspace_name
+
+	column created_at
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: created_at
+
+	column country_code
+		dataType: string
+		dataCategory: Country
+		sourceColumn: country_code
+
+	column customer_segment
+		dataType: string
+		sourceColumn: customer_segment
+
+	column billing_currency
+		dataType: string
+		sourceColumn: billing_currency
+
+	column is_active
+		dataType: boolean
+		sourceColumn: is_active
+
+	column user_count
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: user_count
+
+	column active_user_count
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: active_user_count
+
+	column owner_count
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: owner_count
+
+	column active_owner_count
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: active_owner_count
+
+	column subscription_count
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: subscription_count
+
+	column active_subscription_count
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: active_subscription_count
+
+	column acquisition_source
+		dataType: string
+		sourceColumn: acquisition_source
+
+	column acquisition_medium
+		dataType: string
+		sourceColumn: acquisition_medium
+
+	partition dim_workspaces = m
+		mode: import
+		source =
+			let
+				Source = PostgreSQL.Database(#"Server", #"Database"),
+				Navigation = Source{[Schema="marts", Item="dim_workspaces"]}[Data]
+			in
+				Navigation

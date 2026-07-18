@@ -1,0 +1,73 @@
+table dim_users
+
+	column user_key
+		dataType: string
+		isHidden
+		isKey
+		sourceColumn: user_key
+
+	column workspace_key
+		dataType: string
+		isHidden
+		sourceColumn: workspace_key
+
+	column user_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: user_id
+
+	column workspace_id
+		dataType: string
+		sourceColumn: workspace_id
+
+	column created_at
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: created_at
+
+	column country_code
+		dataType: string
+		dataCategory: Country
+		sourceColumn: country_code
+
+	column user_role
+		dataType: string
+		sourceColumn: user_role
+
+	column signup_type
+		dataType: string
+		sourceColumn: signup_type
+
+	column has_gdpr_consent
+		dataType: boolean
+		sourceColumn: has_gdpr_consent
+
+	column is_active
+		dataType: boolean
+		sourceColumn: is_active
+
+	column deleted_at
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: deleted_at
+
+	column is_invalid_created_at
+		dataType: boolean
+		sourceColumn: is_invalid_created_at
+
+	column is_missing_country
+		dataType: boolean
+		sourceColumn: is_missing_country
+
+	column has_invalid_lifecycle
+		dataType: boolean
+		sourceColumn: has_invalid_lifecycle
+
+	partition dim_users = m
+		mode: import
+		source =
+			let
+				Source = PostgreSQL.Database(#"Server", #"Database"),
+				Navigation = Source{[Schema="marts", Item="dim_users"]}[Data]
+			in
+				Navigation

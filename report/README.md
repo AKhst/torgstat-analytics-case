@@ -1,10 +1,14 @@
 # Reports
 
-This directory is reserved for future analytics deliverables, such as:
+This directory contains analytics deliverables built on top of the dbt marts layer.
 
-- Power BI project files (`.pbip`);
-- semantic model metadata and DAX measures;
-- exported PDF reports;
-- presentations and supporting documentation.
+The Power BI implementation lives in `power_bi/`:
 
-No report or Power BI artifact has been added yet. The repository currently implements synthetic data generation, raw PostgreSQL loading, dbt staging, and marts models. The reporting layer remains planned work.
+- `power_bi/TorgstatAnalytics.pbip` is the version-controlled project entry point.
+- `power_bi/TorgstatAnalytics.SemanticModel/` stores the model as TMDL.
+- `power_bi/TorgstatAnalytics.Report/` stores the report as PBIR after the first Desktop save.
+- `power_bi/README.md` documents the local and Git workflows.
+- `power_bi/semantic_model.md` defines the first semantic model.
+- `power_bi/report_blueprint.md` defines the first report pages.
+
+Binary `.pbix` files are intentionally not committed. PBIP, TMDL, and PBIR metadata are reviewable text and belong in Git; local `.pbi` settings and data caches do not.

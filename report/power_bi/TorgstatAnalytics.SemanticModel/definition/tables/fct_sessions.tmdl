@@ -1,0 +1,68 @@
+table fct_sessions
+
+	column session_key
+		dataType: string
+		isKey
+		sourceColumn: session_key
+
+	column user_key
+		dataType: string
+		isHidden
+		sourceColumn: user_key
+
+	column workspace_key
+		dataType: string
+		isHidden
+		sourceColumn: workspace_key
+
+	column session_id
+		dataType: string
+		sourceColumn: session_id
+
+	column user_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: user_id
+
+	column workspace_id
+		dataType: string
+		sourceColumn: workspace_id
+
+	column started_at
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: started_at
+
+	column started_date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: started_date
+
+	column utm_source
+		dataType: string
+		sourceColumn: utm_source
+
+	column utm_medium
+		dataType: string
+		sourceColumn: utm_medium
+
+	column is_first_session
+		dataType: boolean
+		sourceColumn: is_first_session
+
+	column is_missing_first_touch_source
+		dataType: boolean
+		sourceColumn: is_missing_first_touch_source
+
+	column has_utm_on_non_first_session
+		dataType: boolean
+		sourceColumn: has_utm_on_non_first_session
+
+	partition fct_sessions = m
+		mode: import
+		source =
+			let
+				Source = PostgreSQL.Database(#"Server", #"Database"),
+				Navigation = Source{[Schema="marts", Item="fct_sessions"]}[Data]
+			in
+				Navigation

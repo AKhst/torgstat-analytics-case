@@ -1,0 +1,51 @@
+table fct_subscriptions
+
+	column subscription_key
+		dataType: string
+		isKey
+		sourceColumn: subscription_key
+
+	column workspace_key
+		dataType: string
+		isHidden
+		sourceColumn: workspace_key
+
+	column subscription_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: subscription_id
+
+	column workspace_id
+		dataType: string
+		sourceColumn: workspace_id
+
+	column started_at
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: started_at
+
+	column ended_at
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: ended_at
+
+	column subscription_status
+		dataType: string
+		sourceColumn: subscription_status
+
+	column has_invalid_period
+		dataType: boolean
+		sourceColumn: has_invalid_period
+
+	column has_invalid_lifecycle
+		dataType: boolean
+		sourceColumn: has_invalid_lifecycle
+
+	partition fct_subscriptions = m
+		mode: import
+		source =
+			let
+				Source = PostgreSQL.Database(#"Server", #"Database"),
+				Navigation = Source{[Schema="marts", Item="fct_subscriptions"]}[Data]
+			in
+				Navigation
