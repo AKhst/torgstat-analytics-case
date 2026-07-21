@@ -30,7 +30,6 @@ relationship 'Sessions to Users'
 	fromColumn: fct_sessions.user_key
 	toColumn: dim_users.user_key
 
-/// Inactive role-playing date relationship used by USERELATIONSHIP().
 relationship 'Sessions to Session Date'
 	isActive: false
 	fromColumn: fct_sessions.started_date
@@ -40,7 +39,6 @@ relationship 'Events to Workspaces'
 	fromColumn: fct_events.workspace_key
 	toColumn: dim_workspaces.workspace_key
 
-/// Inactive role-playing date relationship used by USERELATIONSHIP().
 relationship 'Events to Event Date'
 	isActive: false
 	fromColumn: fct_events.event_date
@@ -50,7 +48,6 @@ relationship 'Monthly Billing to Workspaces'
 	fromColumn: mart_workspace_monthly_billing.workspace_key
 	toColumn: dim_workspaces.workspace_key
 
-/// Inactive role-playing date relationship used by USERELATIONSHIP().
 relationship 'Monthly Billing to Billing Month'
 	isActive: false
 	fromColumn: mart_workspace_monthly_billing.billing_month
