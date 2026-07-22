@@ -1,0 +1,152 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "c9f87b7e0c7d0d412cc4",
+  "position": {
+    "x": 9.615023474178404,
+    "y": 20.431924882629108,
+    "z": 0,
+    "height": 563.68075117370893,
+    "width": 783.62441314554,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "invoice_id"
+                }
+              },
+              "queryRef": "fct_invoices_converted.invoice_id",
+              "nativeQueryRef": "invoice_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "issued_at"
+                }
+              },
+              "queryRef": "fct_invoices_converted.issued_at",
+              "nativeQueryRef": "issued_at"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "source_currency_code"
+                }
+              },
+              "queryRef": "fct_invoices_converted.source_currency_code",
+              "nativeQueryRef": "source_currency_code"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "net_amount"
+                }
+              },
+              "queryRef": "fct_invoices_converted.net_amount",
+              "nativeQueryRef": "net_amount"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "fx_rate_to_usd"
+                }
+              },
+              "queryRef": "fct_invoices_converted.fx_rate_to_usd",
+              "nativeQueryRef": "fx_rate_to_usd"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "analytics_net_amount_usd"
+                }
+              },
+              "queryRef": "fct_invoices_converted.analytics_net_amount_usd",
+              "nativeQueryRef": "analytics_net_amount_usd"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "payment_status"
+                }
+              },
+              "queryRef": "fct_invoices_converted.payment_status",
+              "nativeQueryRef": "payment_status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "is_analytics_eligible"
+                }
+              },
+              "queryRef": "fct_invoices_converted.is_analytics_eligible",
+              "nativeQueryRef": "is_analytics_eligible"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fct_invoices_converted"
+                  }
+                },
+                "Property": "issued_at"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    }
+  }
+}

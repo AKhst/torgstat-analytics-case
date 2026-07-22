@@ -1,84 +1,153 @@
 table dim_workspaces
+	lineageTag: 39af9b9c-e3d8-46d2-99ed-83062863024b
 
 	column workspace_key
 		dataType: string
 		isHidden
 		isKey
+		lineageTag: 85310ea2-884c-4471-a7cc-cb33bbdedd92
+		summarizeBy: none
 		sourceColumn: workspace_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_id
 		dataType: string
+		lineageTag: 22961b46-326a-43fd-804f-aa0a0a23675e
+		summarizeBy: none
 		sourceColumn: workspace_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_name
 		dataType: string
+		lineageTag: afc40189-12f0-4304-82bd-1b34db371b2e
+		summarizeBy: none
 		sourceColumn: workspace_name
+
+		annotation SummarizationSetBy = Automatic
 
 	column created_at
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 92f3ed19-669f-4cd2-961f-b9e0ab4a1099
 		summarizeBy: none
 		sourceColumn: created_at
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column country_code
 		dataType: string
+		lineageTag: e17b38e5-b94a-4afd-ba3e-4581c36fbf49
 		dataCategory: Country
+		summarizeBy: none
 		sourceColumn: country_code
+
+		annotation SummarizationSetBy = Automatic
 
 	column customer_segment
 		dataType: string
+		lineageTag: dd3b5b9d-e24f-401c-91ef-92cd060af4f4
+		summarizeBy: none
 		sourceColumn: customer_segment
+
+		annotation SummarizationSetBy = Automatic
 
 	column billing_currency
 		dataType: string
+		lineageTag: 24e7e488-f6a6-4e6e-9a86-3975ac555287
+		summarizeBy: none
 		sourceColumn: billing_currency
+
+		annotation SummarizationSetBy = Automatic
 
 	column is_active
 		dataType: boolean
+		lineageTag: 62383f28-6b2e-444e-9c85-1b3966f3b44a
+		summarizeBy: none
 		sourceColumn: is_active
+
+		annotation SummarizationSetBy = Automatic
 
 	column user_count
 		dataType: int64
-		summarizeBy: none
+		lineageTag: 76bed564-b8de-4eef-9aa0-ba4d633bb250
+		summarizeBy: sum
 		sourceColumn: user_count
+
+		annotation SummarizationSetBy = Automatic
 
 	column active_user_count
 		dataType: int64
-		summarizeBy: none
+		lineageTag: b11ce599-4c5b-4c12-ad7b-295ac206e91f
+		summarizeBy: sum
 		sourceColumn: active_user_count
+
+		annotation SummarizationSetBy = Automatic
 
 	column owner_count
 		dataType: int64
-		summarizeBy: none
+		lineageTag: fa3e9015-1d51-417d-9151-a5a46785159b
+		summarizeBy: sum
 		sourceColumn: owner_count
+
+		annotation SummarizationSetBy = Automatic
 
 	column active_owner_count
 		dataType: int64
-		summarizeBy: none
+		lineageTag: ae58fa22-8f2f-41df-90e2-1494e063d74a
+		summarizeBy: sum
 		sourceColumn: active_owner_count
+
+		annotation SummarizationSetBy = Automatic
 
 	column subscription_count
 		dataType: int64
-		summarizeBy: none
+		lineageTag: f60d9d6e-a9ed-4b99-8cf2-f42100fd0cf6
+		summarizeBy: sum
 		sourceColumn: subscription_count
+
+		annotation SummarizationSetBy = Automatic
 
 	column active_subscription_count
 		dataType: int64
-		summarizeBy: none
+		lineageTag: 1dedc474-2bfa-4538-9771-6930d9b08779
+		summarizeBy: sum
 		sourceColumn: active_subscription_count
+
+		annotation SummarizationSetBy = Automatic
 
 	column acquisition_source
 		dataType: string
+		lineageTag: 610f878e-4cd7-4d41-96ab-484b68988cb9
+		summarizeBy: none
 		sourceColumn: acquisition_source
+
+		annotation SummarizationSetBy = Automatic
 
 	column acquisition_medium
 		dataType: string
+		lineageTag: a555b6bf-357c-435a-8fd5-96dd719c150c
+		summarizeBy: none
 		sourceColumn: acquisition_medium
+
+		annotation SummarizationSetBy = Automatic
+
+	column loaded_at_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b8f2fb92-efff-48c9-96a2-ebe706cde166
+		summarizeBy: none
+		sourceColumn: loaded_at_utc
+
+		annotation SummarizationSetBy = Automatic
 
 	partition dim_workspaces = m
 		mode: import
 		source =
-			let
-				Source = PostgreSQL.Database(#"Server", #"Database"),
-				Navigation = Source{[Schema="marts", Item="dim_workspaces"]}[Data]
-			in
-				Navigation
+				let
+					Source = PostgreSQL.Database(#"Server", #"Database"),
+					Navigation = Source{[Schema="marts", Item="dim_workspaces"]}[Data]
+				in
+					Navigation
+

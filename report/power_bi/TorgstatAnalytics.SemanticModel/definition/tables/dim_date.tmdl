@@ -1,82 +1,107 @@
 table dim_date
+	lineageTag: e2a4d2f2-3ec7-4a56-921d-d27d0e30ad25
 	dataCategory: Time
 
 	column date_day
 		dataType: dateTime
 		isKey
+		formatString: Long Date
+		lineageTag: 7afb1d0f-65b4-4558-80f7-3b4cb137cf0b
 		summarizeBy: none
 		sourceColumn: date_day
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column calendar_year
 		dataType: int64
+		lineageTag: dae4807e-9813-40f6-afcf-59d08fa8587f
 		summarizeBy: none
 		sourceColumn: calendar_year
 
 	column calendar_quarter
 		dataType: int64
+		lineageTag: ced7f214-e6f4-4062-adb2-79a64c33715e
 		summarizeBy: none
 		sourceColumn: calendar_quarter
 
 	column month_number
 		dataType: int64
 		isHidden
+		lineageTag: 4c1b52ca-69b0-49ff-a9bf-a50aa43d8ea9
 		summarizeBy: none
 		sourceColumn: month_number
 
 	column month_name_short
 		dataType: string
-		sortByColumn: month_number
+		lineageTag: a1af850f-2f33-43fa-a278-a313fc0fed02
 		sourceColumn: month_name_short
+		sortByColumn: month_number
 
 	column month_name
 		dataType: string
-		sortByColumn: month_number
+		lineageTag: 114220b8-73cf-4aff-9717-b9d376183384
 		sourceColumn: month_name
+		sortByColumn: month_number
 
 	column month_start_date
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 04094500-066d-441f-97d0-df6d56b8cdf5
 		summarizeBy: none
 		sourceColumn: month_start_date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column month_end_date
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7ed989ca-ef2e-4e6d-baea-ad31bc688851
 		summarizeBy: none
 		sourceColumn: month_end_date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column year_month
 		dataType: string
-		sortByColumn: month_start_date
+		lineageTag: e09a0caa-c85b-4c6a-951d-394dfb726009
 		sourceColumn: year_month
+		sortByColumn: month_start_date
 
 	column iso_week_number
 		dataType: int64
+		lineageTag: 1eac8d71-458b-43e2-b93a-fc9765eb70a8
 		summarizeBy: none
 		sourceColumn: iso_week_number
 
 	column iso_day_of_week
 		dataType: int64
+		lineageTag: a39de379-1f86-4b27-84b4-f2774fad2038
 		summarizeBy: none
 		sourceColumn: iso_day_of_week
 
 	column day_name_short
 		dataType: string
-		sortByColumn: iso_day_of_week
+		lineageTag: c91f0cfc-0c30-47fe-812f-a345e187ef74
 		sourceColumn: day_name_short
+		sortByColumn: iso_day_of_week
 
 	column day_name
 		dataType: string
-		sortByColumn: iso_day_of_week
+		lineageTag: 81ba7fce-2e9b-4134-9985-e9fa4012136d
 		sourceColumn: day_name
+		sortByColumn: iso_day_of_week
 
 	column is_weekend
 		dataType: boolean
+		lineageTag: 991cf57b-6784-4044-8431-7b1932ff4a5d
 		sourceColumn: is_weekend
 
 	partition dim_date = m
 		mode: import
 		source =
-			let
-				Source = PostgreSQL.Database(#"Server", #"Database"),
-				Navigation = Source{[Schema="marts", Item="dim_date"]}[Data]
-			in
-				Navigation
+				let
+					Source = PostgreSQL.Database(#"Server", #"Database"),
+					Navigation = Source{[Schema="marts", Item="dim_date"]}[Data]
+				in
+					Navigation
+

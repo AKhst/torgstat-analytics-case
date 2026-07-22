@@ -52,3 +52,4 @@ relationship 'Monthly Billing to Billing Month'
 	isActive: false
 	fromColumn: mart_workspace_monthly_billing.billing_month
 	toColumn: dim_date.date_day
+

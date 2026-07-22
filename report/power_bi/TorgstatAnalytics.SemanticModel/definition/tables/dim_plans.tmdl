@@ -1,50 +1,93 @@
 table dim_plans
+	lineageTag: fabeafa4-7dac-4e2f-a9ef-7b8cc6931e48
 
 	column plan_key
 		dataType: string
 		isHidden
 		isKey
+		lineageTag: fd1c676e-17f7-4c38-8538-57eec026bdb8
+		summarizeBy: none
 		sourceColumn: plan_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column plan_id
 		dataType: int64
-		summarizeBy: none
+		lineageTag: f5e6ac8d-5e76-473f-9cc6-b01bf1a5dbcc
+		summarizeBy: sum
 		sourceColumn: plan_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column plan_name
 		dataType: string
-		sortByColumn: tier_rank
+		lineageTag: 99a62072-7343-450f-b659-68f3eca56eeb
+		summarizeBy: none
 		sourceColumn: plan_name
+		sortByColumn: tier_rank
+
+		annotation SummarizationSetBy = Automatic
 
 	column tier_rank
 		dataType: int64
 		isHidden
-		summarizeBy: none
+		lineageTag: 1e153b88-d9ae-4069-927c-ae13d23f8be6
+		summarizeBy: sum
 		sourceColumn: tier_rank
 
+		annotation SummarizationSetBy = Automatic
+
 	column monthly_price
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: 661ac075-01af-44bf-9cc7-080166b52a71
+		summarizeBy: sum
 		sourceColumn: monthly_price
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column annual_price
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: 5cab5b33-e680-48be-bf2f-d12536b508b3
+		summarizeBy: sum
 		sourceColumn: annual_price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column is_active
 		dataType: boolean
+		lineageTag: 9e630545-d19c-45e4-8c81-9a51d6c42e4f
+		summarizeBy: none
 		sourceColumn: is_active
+
+		annotation SummarizationSetBy = Automatic
 
 	column is_free_plan
 		dataType: boolean
+		lineageTag: 68b52eb8-c1e2-439f-b4aa-9bf8f1da70cf
+		summarizeBy: none
 		sourceColumn: is_free_plan
+
+		annotation SummarizationSetBy = Automatic
+
+	column loaded_at_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 15715763-0bf9-4a6d-af84-6ea7fc32a8ba
+		summarizeBy: none
+		sourceColumn: loaded_at_utc
+
+		annotation SummarizationSetBy = Automatic
 
 	partition dim_plans = m
 		mode: import
 		source =
-			let
-				Source = PostgreSQL.Database(#"Server", #"Database"),
-				Navigation = Source{[Schema="marts", Item="dim_plans"]}[Data]
-			in
-				Navigation
+				let
+					Source = PostgreSQL.Database(#"Server", #"Database"),
+					Navigation = Source{[Schema="marts", Item="dim_plans"]}[Data]
+				in
+					Navigation
+

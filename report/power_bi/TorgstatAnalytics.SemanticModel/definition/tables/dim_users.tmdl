@@ -1,73 +1,133 @@
 table dim_users
+	lineageTag: 3e620aaf-1610-4d03-afb8-de2789f7ea0e
 
 	column user_key
 		dataType: string
 		isHidden
 		isKey
+		lineageTag: db647a68-e882-448f-83cd-3e16be30fa11
+		summarizeBy: none
 		sourceColumn: user_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_key
 		dataType: string
 		isHidden
+		lineageTag: 22250dc5-7b7c-4578-b109-9b71f5b47595
+		summarizeBy: none
 		sourceColumn: workspace_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column user_id
 		dataType: int64
-		summarizeBy: none
+		lineageTag: e02d2a5b-35c0-4198-9c10-731bedfe6ae1
+		summarizeBy: sum
 		sourceColumn: user_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_id
 		dataType: string
+		lineageTag: 8d698643-2865-4b38-8dc0-10d1efdd454b
+		summarizeBy: none
 		sourceColumn: workspace_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column created_at
 		dataType: dateTime
+		lineageTag: 498616a5-8ae1-4cfc-8731-5e284914a807
 		summarizeBy: none
 		sourceColumn: created_at
 
 	column country_code
 		dataType: string
+		lineageTag: 7ed22901-fdd6-44a6-8ab3-ac5d6851c2aa
 		dataCategory: Country
+		summarizeBy: none
 		sourceColumn: country_code
+
+		annotation SummarizationSetBy = Automatic
 
 	column user_role
 		dataType: string
+		lineageTag: 98fbbc34-6bbf-4bba-9fd3-509c1a277e82
+		summarizeBy: none
 		sourceColumn: user_role
+
+		annotation SummarizationSetBy = Automatic
 
 	column signup_type
 		dataType: string
+		lineageTag: d623f30e-efa6-47f7-a4e3-1e618efc824b
+		summarizeBy: none
 		sourceColumn: signup_type
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_gdpr_consent
 		dataType: boolean
+		lineageTag: bd8dabda-1db0-4f29-a84f-e3c163557f38
+		summarizeBy: none
 		sourceColumn: has_gdpr_consent
+
+		annotation SummarizationSetBy = Automatic
 
 	column is_active
 		dataType: boolean
+		lineageTag: 93250f63-c7ab-4481-b9d7-c3894d082b92
+		summarizeBy: none
 		sourceColumn: is_active
+
+		annotation SummarizationSetBy = Automatic
 
 	column deleted_at
 		dataType: dateTime
+		lineageTag: 28b096b9-8b7e-40da-8c7d-ed815f53d3db
 		summarizeBy: none
 		sourceColumn: deleted_at
 
 	column is_invalid_created_at
 		dataType: boolean
+		lineageTag: a135fd16-51f4-49a6-ab5d-5fa2abcb7bbc
+		summarizeBy: none
 		sourceColumn: is_invalid_created_at
+
+		annotation SummarizationSetBy = Automatic
 
 	column is_missing_country
 		dataType: boolean
+		lineageTag: dee6073f-16ef-4d78-852e-689a9a9cdd78
+		summarizeBy: none
 		sourceColumn: is_missing_country
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_invalid_lifecycle
 		dataType: boolean
+		lineageTag: c54f2449-ec03-4269-af75-f57094f1ce69
+		summarizeBy: none
 		sourceColumn: has_invalid_lifecycle
+
+		annotation SummarizationSetBy = Automatic
+
+	column loaded_at_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 97710af1-748d-4071-8e37-d299201cef66
+		summarizeBy: none
+		sourceColumn: loaded_at_utc
+
+		annotation SummarizationSetBy = Automatic
 
 	partition dim_users = m
 		mode: import
 		source =
-			let
-				Source = PostgreSQL.Database(#"Server", #"Database"),
-				Navigation = Source{[Schema="marts", Item="dim_users"]}[Data]
-			in
-				Navigation
+				let
+					Source = PostgreSQL.Database(#"Server", #"Database"),
+					Navigation = Source{[Schema="marts", Item="dim_users"]}[Data]
+				in
+					Navigation
+

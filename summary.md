@@ -42,6 +42,6 @@ The current marts support:
 
 - Approve currency fallback and authoritative FX-date rules.
 - Add recognized revenue, MRR, ARR, aging, and retention marts.
-- Build the Power BI semantic model and dashboard.
+- Complete the remaining Power BI pages and production Data Quality remediation workflow; the semantic model, initial Executive Overview, and QA Revenue Trace are already source-controlled.
 - Replace destructive raw loads with durable batch ingestion.
 - Add CI/CD, orchestration, observability, secrets management, and environment separation.

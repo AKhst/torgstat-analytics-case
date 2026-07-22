@@ -2,6 +2,16 @@ model Model
 	culture: en-US
 	defaultPowerBIDataSourceVersion: powerBI_V3
 	discourageImplicitMeasures
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["dim_date","dim_workspaces","dim_users","dim_plans","fct_subscriptions","fct_subscription_plan_history","fct_invoices_converted","fct_sessions","fct_events","mart_workspace_monthly_billing","Server","Database"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["DevMode"]
 
 ref table dim_date
 ref table dim_workspaces
@@ -14,3 +24,4 @@ ref table fct_sessions
 ref table fct_events
 ref table mart_workspace_monthly_billing
 ref table _Measures
+

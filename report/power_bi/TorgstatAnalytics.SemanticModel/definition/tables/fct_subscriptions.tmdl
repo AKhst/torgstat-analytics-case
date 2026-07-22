@@ -1,51 +1,97 @@
 table fct_subscriptions
+	lineageTag: 0cfafb53-1165-4b6e-bc33-b985c4a5690e
 
 	column subscription_key
 		dataType: string
 		isKey
+		lineageTag: 7c6ca890-3242-430f-81e3-77ab8fae1466
+		summarizeBy: none
 		sourceColumn: subscription_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_key
 		dataType: string
 		isHidden
+		lineageTag: c282f911-4eb1-43e2-a03e-9fef8426f5cc
+		summarizeBy: none
 		sourceColumn: workspace_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column subscription_id
 		dataType: int64
-		summarizeBy: none
+		lineageTag: 1a54c6da-3cc4-452f-a973-0d2ae6d73cef
+		summarizeBy: sum
 		sourceColumn: subscription_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_id
 		dataType: string
+		lineageTag: 83ffe5d0-546c-4da3-b41a-e5820a0ffd6d
+		summarizeBy: none
 		sourceColumn: workspace_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column started_at
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 98ac9912-292c-4893-b46c-5321b175fad8
 		summarizeBy: none
 		sourceColumn: started_at
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column ended_at
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 5239ed84-f7c9-4981-837a-ad8654d24e53
 		summarizeBy: none
 		sourceColumn: ended_at
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column subscription_status
 		dataType: string
+		lineageTag: 58cae5b8-cfcd-4a4c-8b61-61e24f7c3c86
+		summarizeBy: none
 		sourceColumn: subscription_status
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_invalid_period
 		dataType: boolean
+		lineageTag: 329d5c0f-0046-400b-8b49-50388fece727
+		summarizeBy: none
 		sourceColumn: has_invalid_period
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_invalid_lifecycle
 		dataType: boolean
+		lineageTag: dc3ec9b5-659d-4c6e-83a5-a66102ee4ee9
+		summarizeBy: none
 		sourceColumn: has_invalid_lifecycle
+
+		annotation SummarizationSetBy = Automatic
+
+	column loaded_at_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 8c0ad9b1-edc5-408c-9342-38f721201366
+		summarizeBy: none
+		sourceColumn: loaded_at_utc
+
+		annotation SummarizationSetBy = Automatic
 
 	partition fct_subscriptions = m
 		mode: import
 		source =
-			let
-				Source = PostgreSQL.Database(#"Server", #"Database"),
-				Navigation = Source{[Schema="marts", Item="fct_subscriptions"]}[Data]
-			in
-				Navigation
+				let
+					Source = PostgreSQL.Database(#"Server", #"Database"),
+					Navigation = Source{[Schema="marts", Item="fct_subscriptions"]}[Data]
+				in
+					Navigation
+

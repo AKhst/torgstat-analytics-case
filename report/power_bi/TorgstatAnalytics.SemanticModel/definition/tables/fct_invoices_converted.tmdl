@@ -1,174 +1,334 @@
 table fct_invoices_converted
+	lineageTag: 03d47988-a293-495a-ab38-0458c964a0db
 
 	column invoice_key
 		dataType: string
 		isKey
+		lineageTag: bd3887e7-6598-4a4b-ad12-9a3ae2a5e5db
+		summarizeBy: none
 		sourceColumn: invoice_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column subscription_key
 		dataType: string
 		isHidden
+		lineageTag: 391dfc70-eaa6-4b67-a922-d2c2dd6dc6a2
+		summarizeBy: none
 		sourceColumn: subscription_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_key
 		dataType: string
 		isHidden
+		lineageTag: 3934ca28-e08d-4c39-a979-121c8c44f8c0
+		summarizeBy: none
 		sourceColumn: workspace_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column plan_key
 		dataType: string
 		isHidden
+		lineageTag: cf1cda7f-39ad-4204-9b83-534ec15b5553
+		summarizeBy: none
 		sourceColumn: plan_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column invoice_id
 		dataType: int64
-		summarizeBy: none
+		lineageTag: eb46db8f-5a26-4a76-9c6f-d9ec641455ae
+		summarizeBy: sum
 		sourceColumn: invoice_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column subscription_id
 		dataType: int64
-		summarizeBy: none
+		lineageTag: 86785c03-39b5-48f0-90f2-2092dcc49019
+		summarizeBy: sum
 		sourceColumn: subscription_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_id
 		dataType: string
+		lineageTag: 6b660169-1c0c-4650-bbd0-a87951a01b58
+		summarizeBy: none
 		sourceColumn: workspace_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column plan_id
 		dataType: int64
-		summarizeBy: none
+		lineageTag: dff2041c-9feb-430e-bb16-737a7c5d6fd6
+		summarizeBy: sum
 		sourceColumn: plan_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column billing_frequency
 		dataType: string
+		lineageTag: ce7ecaef-48e5-422d-9ed7-b133bc7b15e9
+		summarizeBy: none
 		sourceColumn: billing_frequency
+
+		annotation SummarizationSetBy = Automatic
 
 	column issued_at
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: c9135afa-771b-44c9-a483-9681a545004e
 		summarizeBy: none
 		sourceColumn: issued_at
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column due_at
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: b7a6ec1f-d10c-4486-b109-969c2988f1b0
 		summarizeBy: none
 		sourceColumn: due_at
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column period_start
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: f3cc2450-9eaf-4b33-9994-1dc0ec11a94d
 		summarizeBy: none
 		sourceColumn: period_start
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column period_end
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: f9f13021-8b4c-4118-b43d-6526143b9132
 		summarizeBy: none
 		sourceColumn: period_end
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column source_currency_code
 		dataType: string
+		lineageTag: a55d1370-1880-429e-a240-6a4421c4b9a3
+		summarizeBy: none
 		sourceColumn: source_currency_code
 
+		annotation SummarizationSetBy = Automatic
+
 	column net_amount
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		formatString: 0
+		lineageTag: 24ea0001-1ca8-4692-b676-d77ec9ef312b
+		summarizeBy: sum
 		sourceColumn: net_amount
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
 	column tax_amount
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: 59de68dc-c661-47e6-968f-56bf24ade6ed
+		summarizeBy: sum
 		sourceColumn: tax_amount
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column gross_amount
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: f10fa2ec-ee1a-42a1-a8bf-604c21621468
+		summarizeBy: sum
 		sourceColumn: gross_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column payment_status
 		dataType: string
+		lineageTag: 83ded58e-0042-4bb9-a81d-8d4014cbca73
+		summarizeBy: none
 		sourceColumn: payment_status
+
+		annotation SummarizationSetBy = Automatic
 
 	column paid_at
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: bf24136e-26f4-466e-9a1c-66c0b19c9936
 		summarizeBy: none
 		sourceColumn: paid_at
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column amount_reconciliation_difference
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: 32694a47-6d7a-4004-960b-9db2fab3dc9a
+		summarizeBy: sum
 		sourceColumn: amount_reconciliation_difference
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column is_missing_currency
 		dataType: boolean
+		lineageTag: cd638301-0054-4c4c-b00d-9980c84884f6
+		summarizeBy: none
 		sourceColumn: is_missing_currency
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_negative_amount
 		dataType: boolean
+		lineageTag: 9297dea1-ee39-4ee6-8a2d-ca2047780af2
+		summarizeBy: none
 		sourceColumn: has_negative_amount
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_amount_reconciliation_mismatch
 		dataType: boolean
+		lineageTag: 56d2105e-a4d2-4db1-9732-a92deb2765cc
+		summarizeBy: none
 		sourceColumn: has_amount_reconciliation_mismatch
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_invalid_billing_period
 		dataType: boolean
+		lineageTag: 21861f63-04de-453e-b86b-118428482683
+		summarizeBy: none
 		sourceColumn: has_invalid_billing_period
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_invalid_due_date
 		dataType: boolean
+		lineageTag: 2d082f0e-2631-4686-9029-e8508d1234e6
+		summarizeBy: none
 		sourceColumn: has_invalid_due_date
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_invalid_payment_lifecycle
 		dataType: boolean
+		lineageTag: 93651eee-dab5-4ca1-b102-f83ade8b4fc0
+		summarizeBy: none
 		sourceColumn: has_invalid_payment_lifecycle
+
+		annotation SummarizationSetBy = Automatic
 
 	column is_analytics_eligible
 		dataType: boolean
+		lineageTag: d37443d7-b53a-4904-937d-b99450e75df9
+		summarizeBy: none
 		sourceColumn: is_analytics_eligible
 
+		annotation SummarizationSetBy = Automatic
+
 	column analytics_net_amount
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: 0befea21-39a6-4000-8cbf-49288fe94c01
+		summarizeBy: sum
 		sourceColumn: analytics_net_amount
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column analytics_tax_amount
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: 58f9329f-d112-400f-a5c0-4b230a562c88
+		summarizeBy: sum
 		sourceColumn: analytics_tax_amount
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column analytics_gross_amount
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: 59d8eae7-49bc-4860-89e8-b7927146af2e
+		summarizeBy: sum
 		sourceColumn: analytics_gross_amount
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column fx_rate_to_usd
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: f7cca8d9-74af-40a7-b6c9-81188b36e946
+		summarizeBy: sum
 		sourceColumn: fx_rate_to_usd
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column fx_rate_date
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: fa721849-a027-4986-b00d-98ed3ea08a16
 		summarizeBy: none
 		sourceColumn: fx_rate_date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column analytics_net_amount_usd
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: ffe8a30e-97d4-4fc1-a1c7-023c2b0c2d15
+		summarizeBy: sum
 		sourceColumn: analytics_net_amount_usd
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column analytics_tax_amount_usd
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: edd26a74-78d9-43ab-b75b-129d720657df
+		summarizeBy: sum
 		sourceColumn: analytics_tax_amount_usd
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column analytics_gross_amount_usd
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: af6b3b4d-34f1-4a7d-bb03-bae6ce7767b1
+		summarizeBy: sum
 		sourceColumn: analytics_gross_amount_usd
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column loaded_at_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: e17e3df4-a4de-4d9e-a4d8-7e615a470bd5
+		summarizeBy: none
+		sourceColumn: loaded_at_utc
+
+		annotation SummarizationSetBy = Automatic
 
 	partition fct_invoices_converted = m
 		mode: import
 		source =
-			let
-				Source = PostgreSQL.Database(#"Server", #"Database"),
-				Navigation = Source{[Schema="marts", Item="fct_invoices_converted"]}[Data]
-			in
-				Navigation
+				let
+					Source = PostgreSQL.Database(#"Server", #"Database"),
+					Navigation = Source{[Schema="marts", Item="fct_invoices_converted"]}[Data]
+				in
+					Navigation
+

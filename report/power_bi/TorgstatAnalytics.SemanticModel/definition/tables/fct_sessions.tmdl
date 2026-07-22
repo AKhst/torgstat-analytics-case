@@ -1,68 +1,127 @@
 table fct_sessions
+	lineageTag: 222a095b-96af-47c0-a4f9-07dcbb4421af
 
 	column session_key
 		dataType: string
 		isKey
+		lineageTag: 03893bcb-c7f3-4cb5-80c5-10fabb1efcbc
+		summarizeBy: none
 		sourceColumn: session_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column user_key
 		dataType: string
 		isHidden
+		lineageTag: 80f2859f-b5a1-4600-86e6-54da8e70b0ec
+		summarizeBy: none
 		sourceColumn: user_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_key
 		dataType: string
 		isHidden
+		lineageTag: 3e052b70-79b6-4463-8697-56593cf73748
+		summarizeBy: none
 		sourceColumn: workspace_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column session_id
 		dataType: string
+		lineageTag: 533b3f09-7ae2-455e-bd9b-efdc15cf3738
+		summarizeBy: none
 		sourceColumn: session_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column user_id
 		dataType: int64
-		summarizeBy: none
+		lineageTag: 1e06fa00-8659-4250-9909-601bed263f20
+		summarizeBy: sum
 		sourceColumn: user_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_id
 		dataType: string
+		lineageTag: 8f5ef313-c023-41cf-a351-3307384e606c
+		summarizeBy: none
 		sourceColumn: workspace_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column started_at
 		dataType: dateTime
+		lineageTag: 8d696fd4-5e34-4763-b5c2-fe29d685984a
 		summarizeBy: none
 		sourceColumn: started_at
 
 	column started_date
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 676f4a28-3c38-4d77-8c05-2d4f17115b81
 		summarizeBy: none
 		sourceColumn: started_date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column utm_source
 		dataType: string
+		lineageTag: 1d2ee3ee-975b-494b-ab66-ed7803023972
+		summarizeBy: none
 		sourceColumn: utm_source
+
+		annotation SummarizationSetBy = Automatic
 
 	column utm_medium
 		dataType: string
+		lineageTag: 4014e715-a144-4a40-b556-92cc21716232
+		summarizeBy: none
 		sourceColumn: utm_medium
+
+		annotation SummarizationSetBy = Automatic
 
 	column is_first_session
 		dataType: boolean
+		lineageTag: 3b0397bf-03f7-4e96-a940-b4d972a9a830
+		summarizeBy: none
 		sourceColumn: is_first_session
+
+		annotation SummarizationSetBy = Automatic
 
 	column is_missing_first_touch_source
 		dataType: boolean
+		lineageTag: 85a97932-3bbd-4f1b-a4a5-653179f24f01
+		summarizeBy: none
 		sourceColumn: is_missing_first_touch_source
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_utm_on_non_first_session
 		dataType: boolean
+		lineageTag: bc7bd851-1060-4e2f-a95a-1f8f3c7ce295
+		summarizeBy: none
 		sourceColumn: has_utm_on_non_first_session
+
+		annotation SummarizationSetBy = Automatic
+
+	column loaded_at_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cf33d89b-5bba-4018-a94a-cff4bf8692c1
+		summarizeBy: none
+		sourceColumn: loaded_at_utc
+
+		annotation SummarizationSetBy = Automatic
 
 	partition fct_sessions = m
 		mode: import
 		source =
-			let
-				Source = PostgreSQL.Database(#"Server", #"Database"),
-				Navigation = Source{[Schema="marts", Item="fct_sessions"]}[Data]
-			in
-				Navigation
+				let
+					Source = PostgreSQL.Database(#"Server", #"Database"),
+					Navigation = Source{[Schema="marts", Item="fct_sessions"]}[Data]
+				in
+					Navigation
+

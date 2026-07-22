@@ -24,7 +24,26 @@ TorgstatAnalytics.Report/
         └── ExecutiveOverview/page.json
 ```
 
-The semantic model and a blank Executive Overview page are already authored as code. Power BI Desktop adds one PBIR JSON file per visual as the report is built. Commit those files to Git.
+The semantic model and report are authored as code. Power BI Desktop adds one PBIR JSON file per visual as the report is built. Commit those files to Git.
+
+## Current Authoring State
+
+The report currently contains:
+
+- `Executive Overview`: an invoice-date slicer, five KPI cards, and a monthly net-revenue line chart;
+- `QA Revenue Trace`: an invoice-level table for reconciling the revenue measure to its source rows.
+- `Data Quality Monitor`: a placeholder page currently copied from Executive Overview; its visuals still need to be replaced with quality KPIs and issue-detail tables.
+
+The Executive Overview KPI strip uses `Net Revenue USD`, `Gross Revenue USD`, `Paid Invoices`, `Payment Success Rate`, and `Active Paid Workspaces`. The first four metrics are filtered by the active invoice-date relationship. `Active Paid Workspaces` is a current full-data subscription metric and does not respond to the invoice-date slicer.
+
+The next planned report work is:
+
+1. Complete the Executive Overview breakdowns by plan, customer segment, and country.
+2. Add `Revenue And Plans` and `Acquisition And Usage` pages.
+3. Build the initial `Data Quality Monitor` from the existing quality flags and measures.
+4. Design a dedicated `mart_data_quality_issues` model before treating the quality page as an operational ERP-remediation queue.
+
+`report_blueprint.md` contains the target page layout. `semantic_model.md` documents table grain, relationships, and date behavior.
 
 ## Scope
 
@@ -48,6 +67,13 @@ Test-NetConnection <mac-ip> -Port 5433
 ```
 
 The test must return `TcpTestSucceeded : True`. Docker, the local pipeline, and PostgreSQL remain on the Mac; only Power BI Desktop and a Git working copy are required in Windows.
+
+There are two supported ways to obtain data after cloning the repository:
+
+1. **Shared database:** open the PBIP, change `Server` and `Database`, enter the read-only credentials, and refresh. No local Python, Docker, data generation, import, or dbt run is required.
+2. **Independent local database:** configure `.env`, run the complete local pipeline, connect the PBIP to `localhost:5433`, and refresh.
+
+Git transports the report and model definitions, not imported data or credentials. A cloned report therefore has its pages, visuals, measures, and relationships, but requires a reachable PostgreSQL database before its visuals can display refreshed data.
 
 Recommended import tables:
 
@@ -76,6 +102,31 @@ Avoid importing raw and staging tables into the first report. They are useful fo
 
 Power BI Desktop must be restarted after external TMDL or PBIR edits because it does not hot-reload project files.
 
+## BI-As-Code File Map
+
+- `TorgstatAnalytics.pbip` is the project entry point.
+- `TorgstatAnalytics.Report/definition/pages/**/page.json` defines report pages.
+- `TorgstatAnalytics.Report/definition/pages/**/visuals/**/visual.json` defines visual type, field bindings, layout, filters, and formatting.
+- `TorgstatAnalytics.SemanticModel/definition/tables/*.tmdl` defines tables, columns, partitions, and DAX measures.
+- `TorgstatAnalytics.SemanticModel/definition/relationships.tmdl` defines model relationships.
+- `TorgstatAnalytics.SemanticModel/definition/expressions.tmdl` defines the `Server` and `Database` parameters, but never credentials.
+
+Power BI Desktop may normalize or rewrite many TMDL files on its first save. Review that generated diff separately from later business changes. Do not hand-edit PBIR or TMDL while Power BI Desktop has the project open because the application can overwrite external changes.
+
+## Understanding Date Relationships
+
+Invoice issue date is the active reporting date. Session, event, and monthly-billing date relationships are inactive and are activated only by measures such as `Sessions By Session Date` and `Events By Event Date` through `USERELATIONSHIP()`.
+
+For a quick learning check, create a temporary page with a `dim_date[date_day]` slicer and compare `Sessions` with `Sessions By Session Date`, then `Events` with `Events By Event Date`. Only the date-aware measures should change when the date range changes.
+
+Use `dim_date` as the shared reporting calendar. Avoid building production visuals on Power BI's automatically generated local date tables.
+
+## Data Quality Handoff
+
+The first Data Quality page can use the existing measures for missing invoice currency, invoice amount mismatch, invalid user timestamps, missing user country, duplicate event payloads, first-touch source loss, and FX coverage. Include record-level invoice and user tables with business IDs, quality flags, and `loaded_at_utc` so an issue can be traced back through marts, staging, raw tables, and the source extract.
+
+An operational remediation workflow needs more than visual counts. Before handing issues to ERP or source-system owners, add a durable issue-grain model with issue code, entity and record ID, source system, field, severity, detected timestamp, batch lineage, owner team, resolution status, and ticket ID. Power BI should monitor and route the issue; the source record should be corrected in ERP and verified by a subsequent pipeline run.
+
 ## Windows VM Git Workflow
 
 Clone once in PowerShell:
@@ -101,6 +152,8 @@ Do not commit:
 - `.pbi/cache.abf` data caches;
 - `.pbi/localSettings.json` machine-specific settings;
 - `.env` or database credentials.
+
+Before committing, check `expressions.tmdl`. Replace a personal or temporary LAN IP with the agreed default (`localhost:5433` for this repository) or an approved shared DNS name. Database passwords are stored outside the project and must never appear in the diff.
 
 ## Refresh Order
 

@@ -190,7 +190,7 @@ Accidental identifier collisions, negative invoice amounts, random first-session
 
 ## Current Limitations
 
-- The PBIP semantic model is source-controlled, while the first PBIR report pages still need to be authored and saved through Power BI Desktop.
+- The PBIP semantic model is source-controlled. Executive Overview and QA Revenue Trace are partially authored; the remaining report pages and production Data Quality workflow are still planned.
 - Raw loading replaces tables instead of preserving append-only batch history.
 - Invoice-currency fallback to workspace default and the authoritative FX conversion date remain separate draft business decisions.
 - Recognized-revenue, MRR, and ARR marts are not implemented yet.

@@ -1,71 +1,131 @@
 table fct_subscription_plan_history
+	lineageTag: df38614a-6155-4195-bc07-e2e36cdca3e7
 
 	column subscription_plan_period_key
 		dataType: string
 		isKey
+		lineageTag: 42694b5a-c092-4177-a2fd-2ae1e9605120
+		summarizeBy: none
 		sourceColumn: subscription_plan_period_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column subscription_key
 		dataType: string
 		isHidden
+		lineageTag: d59e59d4-6d23-4ee1-b5e6-f6aed6843e6d
+		summarizeBy: none
 		sourceColumn: subscription_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_key
 		dataType: string
 		isHidden
+		lineageTag: 70e9f371-aa29-47d1-ab4c-f1a539898b75
+		summarizeBy: none
 		sourceColumn: workspace_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column plan_key
 		dataType: string
 		isHidden
+		lineageTag: 5897d898-0ecd-41f0-b256-335c8c25f571
+		summarizeBy: none
 		sourceColumn: plan_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column subscription_plan_period_id
 		dataType: int64
-		summarizeBy: none
+		lineageTag: c5d02380-fa87-4c38-bc0b-b4d6d628b2c8
+		summarizeBy: sum
 		sourceColumn: subscription_plan_period_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column subscription_id
 		dataType: int64
-		summarizeBy: none
+		lineageTag: 3879bc3c-a648-466b-b349-0851fd31df46
+		summarizeBy: sum
 		sourceColumn: subscription_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_id
 		dataType: string
+		lineageTag: ac52691a-2694-44b5-90cb-579ca67ac2b9
+		summarizeBy: none
 		sourceColumn: workspace_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column plan_id
 		dataType: int64
-		summarizeBy: none
+		lineageTag: 03b953ac-14e8-46c8-b3d0-a22cda135e73
+		summarizeBy: sum
 		sourceColumn: plan_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column billing_frequency
 		dataType: string
+		lineageTag: 209116de-ae69-433b-b4d6-1fb4a0497d3b
+		summarizeBy: none
 		sourceColumn: billing_frequency
+
+		annotation SummarizationSetBy = Automatic
 
 	column valid_from
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 76d3284e-c2a2-478a-8efe-720a8b7a2206
 		summarizeBy: none
 		sourceColumn: valid_from
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column valid_to
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 925480ae-697d-43f8-8044-d06528da497c
 		summarizeBy: none
 		sourceColumn: valid_to
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column change_type
 		dataType: string
+		lineageTag: 0578aa74-285c-4f1e-aedd-b6a0f3a4b5f7
+		summarizeBy: none
 		sourceColumn: change_type
+
+		annotation SummarizationSetBy = Automatic
 
 	column has_invalid_period
 		dataType: boolean
+		lineageTag: c754076b-edde-4df0-bf5e-9b62e6cdaff2
+		summarizeBy: none
 		sourceColumn: has_invalid_period
+
+		annotation SummarizationSetBy = Automatic
+
+	column loaded_at_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 0d844fae-b46d-4bb0-8935-95ee5c60e14d
+		summarizeBy: none
+		sourceColumn: loaded_at_utc
+
+		annotation SummarizationSetBy = Automatic
 
 	partition fct_subscription_plan_history = m
 		mode: import
 		source =
-			let
-				Source = PostgreSQL.Database(#"Server", #"Database"),
-				Navigation = Source{[Schema="marts", Item="fct_subscription_plan_history"]}[Data]
-			in
-				Navigation
+				let
+					Source = PostgreSQL.Database(#"Server", #"Database"),
+					Navigation = Source{[Schema="marts", Item="fct_subscription_plan_history"]}[Data]
+				in
+					Navigation
+

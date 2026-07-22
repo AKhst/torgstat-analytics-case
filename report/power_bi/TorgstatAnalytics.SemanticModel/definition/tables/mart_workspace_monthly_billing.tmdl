@@ -1,63 +1,118 @@
 table mart_workspace_monthly_billing
+	lineageTag: 0b11711b-0962-497d-b360-9ad8796a6183
 
 	column workspace_month_currency_key
 		dataType: string
 		isKey
+		lineageTag: 76e54a41-8f68-4648-9ff8-4e87ff3cecad
+		summarizeBy: none
 		sourceColumn: workspace_month_currency_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_key
 		dataType: string
 		isHidden
+		lineageTag: 7b968a51-b2c9-4d8c-a65b-b9a828e79b69
+		summarizeBy: none
 		sourceColumn: workspace_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_id
 		dataType: string
+		lineageTag: 52332d70-15bb-4133-8690-75bddd79990c
+		summarizeBy: none
 		sourceColumn: workspace_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column billing_month
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 183151da-26e8-4d8b-8022-a9850da56821
 		summarizeBy: none
 		sourceColumn: billing_month
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column source_currency_code
 		dataType: string
+		lineageTag: 57af6b1e-f985-4f19-998c-4216edd0944b
+		summarizeBy: none
 		sourceColumn: source_currency_code
+
+		annotation SummarizationSetBy = Automatic
 
 	column invoice_count
 		dataType: int64
-		summarizeBy: none
+		lineageTag: f7431a4d-bdb0-4aec-b285-88ff3f8554a7
+		summarizeBy: sum
 		sourceColumn: invoice_count
+
+		annotation SummarizationSetBy = Automatic
 
 	column paid_invoice_count
 		dataType: int64
-		summarizeBy: none
+		lineageTag: 2b0a1f42-11df-4c32-93f7-ff4b8e5dfc55
+		summarizeBy: sum
 		sourceColumn: paid_invoice_count
+
+		annotation SummarizationSetBy = Automatic
 
 	column eligible_invoice_count
 		dataType: int64
-		summarizeBy: none
+		lineageTag: c7a68ad3-fc40-4d6a-b554-0e0533dacd81
+		summarizeBy: sum
 		sourceColumn: eligible_invoice_count
 
+		annotation SummarizationSetBy = Automatic
+
 	column eligible_net_amount
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: 04088250-4fd4-45ff-bcd4-6b8f0a905a48
+		summarizeBy: sum
 		sourceColumn: eligible_net_amount
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column eligible_tax_amount
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: 723d01dd-72f2-4771-997a-73f008b7a3fe
+		summarizeBy: sum
 		sourceColumn: eligible_tax_amount
 
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column eligible_gross_amount
-		dataType: decimal
-		summarizeBy: none
+		dataType: double
+		lineageTag: f7506c5a-c37b-46e3-a23a-0a4ebdfc8362
+		summarizeBy: sum
 		sourceColumn: eligible_gross_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column loaded_at_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 1450afb8-baec-4f24-8b54-cbbc1a776e42
+		summarizeBy: none
+		sourceColumn: loaded_at_utc
+
+		annotation SummarizationSetBy = Automatic
 
 	partition mart_workspace_monthly_billing = m
 		mode: import
 		source =
-			let
-				Source = PostgreSQL.Database(#"Server", #"Database"),
-				Navigation = Source{[Schema="marts", Item="mart_workspace_monthly_billing"]}[Data]
-			in
-				Navigation
+				let
+					Source = PostgreSQL.Database(#"Server", #"Database"),
+					Navigation = Source{[Schema="marts", Item="mart_workspace_monthly_billing"]}[Data]
+				in
+					Navigation
+

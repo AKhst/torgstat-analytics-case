@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "TorgstatAnalytics"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "9d48d315-7312-4132-a8b5-01b721d963c6"
+  }
+}

@@ -1,47 +1,89 @@
 table fct_events
+	lineageTag: 2cdd613e-5719-4537-818f-44ac009429d3
 
 	column event_key
 		dataType: string
 		isKey
+		lineageTag: f9a53f5b-2bcd-4728-8cf5-e39fb268cf8d
+		summarizeBy: none
 		sourceColumn: event_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_key
 		dataType: string
 		isHidden
+		lineageTag: b0544e33-fcf4-4a04-9e48-99bfab6ba3f5
+		summarizeBy: none
 		sourceColumn: workspace_key
+
+		annotation SummarizationSetBy = Automatic
 
 	column workspace_id
 		dataType: string
+		lineageTag: e4bce352-3b1c-4ddd-b55a-1fa27ac393bd
+		summarizeBy: none
 		sourceColumn: workspace_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column event_date
 		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a2acff69-72aa-4230-b795-bcf223a83570
 		summarizeBy: none
 		sourceColumn: event_date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column event_name
 		dataType: string
+		lineageTag: 35d77ef7-331d-4f49-b426-2ff890f90bc0
+		summarizeBy: none
 		sourceColumn: event_name
+
+		annotation SummarizationSetBy = Automatic
 
 	column event_properties_json
 		dataType: string
 		isHidden
+		lineageTag: 6115808c-4e9a-4ffe-9fab-ede00df839c9
+		summarizeBy: none
 		sourceColumn: event_properties_json
+
+		annotation SummarizationSetBy = Automatic
 
 	column event_occurrence_number
 		dataType: int64
-		summarizeBy: none
+		lineageTag: a7edb9dc-c755-42e0-a042-29d316753d75
+		summarizeBy: sum
 		sourceColumn: event_occurrence_number
+
+		annotation SummarizationSetBy = Automatic
 
 	column is_duplicate_event_payload
 		dataType: boolean
+		lineageTag: 181dbf77-a0a5-47bd-9740-6bf7ea24c73d
+		summarizeBy: none
 		sourceColumn: is_duplicate_event_payload
+
+		annotation SummarizationSetBy = Automatic
+
+	column loaded_at_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cde73c1c-79e8-4ad1-b2bf-b0c4a2af21c5
+		summarizeBy: none
+		sourceColumn: loaded_at_utc
+
+		annotation SummarizationSetBy = Automatic
 
 	partition fct_events = m
 		mode: import
 		source =
-			let
-				Source = PostgreSQL.Database(#"Server", #"Database"),
-				Navigation = Source{[Schema="marts", Item="fct_events"]}[Data]
-			in
-				Navigation
+				let
+					Source = PostgreSQL.Database(#"Server", #"Database"),
+					Navigation = Source{[Schema="marts", Item="fct_events"]}[Data]
+				in
+					Navigation
+

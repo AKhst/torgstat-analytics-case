@@ -1,0 +1,167 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1484.8065735509533,
+            "y": 487.6868136728674
+          },
+          "nodeIndex": "_Measures",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 1038.6734395525129,
+            "y": 349.17695551004965
+          },
+          "nodeIndex": "dim_date",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 170.56669138731002,
+            "y": 953.37362734573492
+          },
+          "nodeIndex": "dim_plans",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 489.41780150168518,
+            "y": -50
+          },
+          "nodeIndex": "dim_users",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 339.92762937301711,
+            "y": 336.31113320153861
+          },
+          "nodeIndex": "dim_workspaces",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 781.726893133205,
+            "y": 20.273389425891537
+          },
+          "nodeIndex": "fct_events",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 460.05427221894593,
+            "y": 689.65983104290808
+          },
+          "nodeIndex": "fct_invoices_converted",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 1250.8065735509533,
+            "y": -8.0877440500328248
+          },
+          "nodeIndex": "fct_sessions",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 581.30059436131455
+          },
+          "nodeIndex": "fct_subscription_plan_history",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 50.017777660051252,
+            "y": 69.928515105725864
+          },
+          "nodeIndex": "fct_subscriptions",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 748.84487105387029,
+            "y": 567.45285980273286
+          },
+          "nodeIndex": "mart_workspace_monthly_billing",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 1718.8065735509533,
+            "y": 537.6868136728674
+          },
+          "nodeIndex": "Table",
+          "nodeLineageTag": "e2a5f642-618a-46c6-ae8e-7445cae79039",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 57.822954182022379,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

@@ -1,7 +1,9 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.1.0/schema.json",
   "pageOrder": [
-    "ExecutiveOverview"
+    "21a80ba1268184904e10",
+    "ExecutiveOverview",
+    "776c82f600e000a9b0d1"
   ],
-  "activePageName": "ExecutiveOverview"
+  "activePageName": "21a80ba1268184904e10"
 }

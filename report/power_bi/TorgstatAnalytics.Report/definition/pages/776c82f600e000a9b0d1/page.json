@@ -1,0 +1,8 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "776c82f600e000a9b0d1",
+  "displayName": "QA Revenue Trace",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280
+}

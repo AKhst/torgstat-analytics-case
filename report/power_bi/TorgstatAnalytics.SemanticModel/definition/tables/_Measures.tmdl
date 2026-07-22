@@ -1,44 +1,53 @@
 table _Measures
 	isHidden
+	lineageTag: 262a5063-0dc7-4fe8-8733-c054290ba44c
 
 	/// Eligible invoice net amount converted to USD.
 	measure 'Net Revenue USD' = SUM ( fct_invoices_converted[analytics_net_amount_usd] )
-		formatString: \$#,##0.00
+		formatString: #,0
 		displayFolder: Revenue
+		lineageTag: af0815f1-96a9-48ea-b2cf-e6aeebb25bef
+
+		annotation PBI_FormatHint = {"isDecimal":true}
 
 	/// Eligible invoice tax amount converted to USD.
 	measure 'Tax Revenue USD' = SUM ( fct_invoices_converted[analytics_tax_amount_usd] )
 		formatString: \$#,##0.00
 		displayFolder: Revenue
+		lineageTag: 49ab71b2-00c6-488f-a5b0-0a09d2a9f2b8
 
 	/// Eligible invoice gross amount converted to USD.
 	measure 'Gross Revenue USD' = SUM ( fct_invoices_converted[analytics_gross_amount_usd] )
-		formatString: \$#,##0.00
+		formatString: 0
 		displayFolder: Revenue
+		lineageTag: 15f4a9e9-1273-4a17-aebb-ab7806a10b8a
 
-	measure 'Paid Net Revenue USD' = ```
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure 'Paid Net Revenue USD' =
 			CALCULATE (
 			    [Net Revenue USD],
 			    fct_invoices_converted[payment_status] = "paid"
 			)
-			```
 		formatString: \$#,##0.00
 		displayFolder: Revenue
+		lineageTag: 2c8313b5-8bb0-42fd-9f88-f2597695de11
 
-	measure 'Open Net Revenue USD' = ```
+	measure 'Open Net Revenue USD' =
 			CALCULATE (
 			    [Net Revenue USD],
 			    fct_invoices_converted[payment_status] <> "paid"
 			)
-			```
 		formatString: \$#,##0.00
 		displayFolder: Revenue
+		lineageTag: 8b6dcdc4-ed87-471f-8a18-9369758428af
 
 	measure 'Average Invoice Net USD' = DIVIDE ( [Net Revenue USD], [Eligible Invoices] )
 		formatString: \$#,##0.00
 		displayFolder: Revenue
+		lineageTag: 09f9f291-fb9e-4322-afa1-25f5dab0d0a7
 
-	measure 'Revenue MoM %' = ```
+	measure 'Revenue MoM %' =
 			VAR _previousMonthRevenue =
 			    CALCULATE (
 			        [Net Revenue USD],
@@ -46,227 +55,241 @@ table _Measures
 			    )
 			RETURN
 			    DIVIDE ( [Net Revenue USD] - _previousMonthRevenue, _previousMonthRevenue )
-			```
 		formatString: 0.00%
 		displayFolder: Revenue
+		lineageTag: 164ce497-a1e6-485c-87c6-ca154cb68c73
 
 	measure 'Revenue YTD USD' = TOTALYTD ( [Net Revenue USD], dim_date[date_day] )
 		formatString: \$#,##0.00
 		displayFolder: Revenue
+		lineageTag: 8545ce26-8c65-4866-aca8-6a4b17b69e4c
 
 	measure Invoices = DISTINCTCOUNT ( fct_invoices_converted[invoice_key] )
 		formatString: #,##0
 		displayFolder: Invoices
+		lineageTag: 6f92b198-e79e-4abc-9d7c-cb67264fefbd
 
-	measure 'Eligible Invoices' = ```
+	measure 'Eligible Invoices' =
 			CALCULATE (
 			    [Invoices],
 			    fct_invoices_converted[is_analytics_eligible] = TRUE ()
 			)
-			```
 		formatString: #,##0
 		displayFolder: Invoices
+		lineageTag: 32566389-6134-4236-8e53-829cced6353c
 
-	measure 'Paid Invoices' = ```
+	measure 'Paid Invoices' =
 			CALCULATE (
 			    [Invoices],
 			    fct_invoices_converted[payment_status] = "paid"
 			)
-			```
 		formatString: #,##0
 		displayFolder: Invoices
+		lineageTag: d2c43a21-8b5c-413e-abae-5c5774832ba1
 
-	measure 'Failed Invoices' = ```
+	measure 'Failed Invoices' =
 			CALCULATE (
 			    [Invoices],
 			    fct_invoices_converted[payment_status] = "failed"
 			)
-			```
 		formatString: #,##0
 		displayFolder: Invoices
+		lineageTag: 8f864547-3f43-4a42-b324-7410c4fb477f
 
 	measure 'Payment Success Rate' = DIVIDE ( [Paid Invoices], [Invoices] )
 		formatString: 0.00%
 		displayFolder: Invoices
+		lineageTag: a01d871d-9284-45a7-93ba-98dbe427a762
 
 	measure Subscriptions = DISTINCTCOUNT ( fct_subscriptions[subscription_key] )
 		formatString: #,##0
 		displayFolder: Subscriptions
+		lineageTag: a13b9226-f6ba-4152-a347-48980ee0eb4b
 
-	measure 'Active Subscriptions' = ```
+	measure 'Active Subscriptions' =
 			CALCULATE (
 			    [Subscriptions],
 			    fct_subscriptions[subscription_status] = "active"
 			)
-			```
 		formatString: #,##0
 		displayFolder: Subscriptions
+		lineageTag: 5ffcd1ac-1a89-47d8-9e71-aa8e57fba0cb
 
-	measure 'Canceled Subscriptions' = ```
+	measure 'Canceled Subscriptions' =
 			CALCULATE (
 			    [Subscriptions],
 			    fct_subscriptions[subscription_status] = "canceled"
 			)
-			```
 		formatString: #,##0
 		displayFolder: Subscriptions
+		lineageTag: 8f528a0d-758b-41e9-9358-544bdd06b82c
 
 	measure 'Paid Workspaces' = DISTINCTCOUNT ( fct_subscriptions[workspace_key] )
 		formatString: #,##0
 		displayFolder: Subscriptions
+		lineageTag: 37b57406-16f4-4036-887a-a2e2829c5968
 
-	measure 'Active Paid Workspaces' = ```
+	measure 'Active Paid Workspaces' =
 			CALCULATE (
 			    DISTINCTCOUNT ( fct_subscriptions[workspace_key] ),
 			    fct_subscriptions[subscription_status] = "active"
 			)
-			```
 		formatString: #,##0
 		displayFolder: Subscriptions
+		lineageTag: b2622aa3-e359-4ada-8f30-6d9cec84a86f
 
 	measure 'Revenue Per Paid Workspace USD' = DIVIDE ( [Net Revenue USD], [Paid Workspaces] )
 		formatString: \$#,##0.00
 		displayFolder: Subscriptions
+		lineageTag: d3e0bf16-4d55-41eb-81ee-7a63b9877901
 
 	measure Workspaces = DISTINCTCOUNT ( dim_workspaces[workspace_key] )
 		formatString: #,##0
 		displayFolder: Acquisition
+		lineageTag: 4beca607-50e2-4490-98d9-9eca6a150504
 
-	measure 'Active Workspaces' = ```
+	measure 'Active Workspaces' =
 			CALCULATE (
 			    [Workspaces],
 			    dim_workspaces[is_active] = TRUE ()
 			)
-			```
 		formatString: #,##0
 		displayFolder: Acquisition
+		lineageTag: d02ee231-4b61-4237-a088-7367b16e1524
 
 	measure Users = DISTINCTCOUNT ( dim_users[user_key] )
 		formatString: #,##0
 		displayFolder: Acquisition
+		lineageTag: 77fc3386-f717-4c11-8d49-000bc5d77e90
 
-	measure 'Active Users' = ```
+	measure 'Active Users' =
 			CALCULATE (
 			    [Users],
 			    dim_users[is_active] = TRUE ()
 			)
-			```
 		formatString: #,##0
 		displayFolder: Acquisition
+		lineageTag: 64268395-6383-4f1f-8abb-8a96e84255c6
 
 	measure Sessions = DISTINCTCOUNT ( fct_sessions[session_key] )
 		formatString: #,##0
 		displayFolder: Acquisition
+		lineageTag: ee2ee5c9-8e5b-4e73-82c2-2e930a2cd982
 
-	measure 'First Sessions' = ```
+	measure 'First Sessions' =
 			CALCULATE (
 			    [Sessions],
 			    fct_sessions[is_first_session] = TRUE ()
 			)
-			```
 		formatString: #,##0
 		displayFolder: Acquisition
+		lineageTag: ae29c5fc-3ca8-440f-8731-f286ebc73632
 
-	measure 'Sessions By Session Date' = ```
+	measure 'Sessions By Session Date' =
 			CALCULATE (
 			    [Sessions],
 			    USERELATIONSHIP ( dim_date[date_day], fct_sessions[started_date] )
 			)
-			```
 		formatString: #,##0
 		displayFolder: Acquisition
+		lineageTag: 8e5d0a03-65c5-4b84-bf0f-597631889493
 
-	measure 'First-Touch Source Loss' = ```
+	measure 'First-Touch Source Loss' =
 			CALCULATE (
 			    [First Sessions],
 			    fct_sessions[is_missing_first_touch_source] = TRUE ()
 			)
-			```
 		formatString: #,##0
 		displayFolder: Acquisition
+		lineageTag: a6536544-3102-4b42-9731-e6e46a376c40
 
 	measure Events = DISTINCTCOUNT ( fct_events[event_key] )
 		formatString: #,##0
 		displayFolder: Product Usage
+		lineageTag: 7a780bb6-2838-4943-a808-b2ea793cfd98
 
-	measure 'Events By Event Date' = ```
+	measure 'Events By Event Date' =
 			CALCULATE (
 			    [Events],
 			    USERELATIONSHIP ( dim_date[date_day], fct_events[event_date] )
 			)
-			```
 		formatString: #,##0
 		displayFolder: Product Usage
+		lineageTag: 2c110ab6-b698-48de-a8be-6794cc00e534
 
-	measure 'Duplicate Event Payloads' = ```
+	measure 'Duplicate Event Payloads' =
 			CALCULATE (
 			    [Events],
 			    fct_events[is_duplicate_event_payload] = TRUE ()
 			)
-			```
 		formatString: #,##0
 		displayFolder: Product Usage
+		lineageTag: dfae7328-61ff-490e-ab3f-2216a0d6f473
 
 	measure 'Events Per Active Workspace' = DIVIDE ( [Events], [Active Workspaces] )
 		formatString: #,##0.00
 		displayFolder: Product Usage
+		lineageTag: c5e9748e-040d-4bde-b24c-094473ecc068
 
-	measure 'Missing Invoice Currency Count' = ```
+	measure 'Missing Invoice Currency Count' =
 			CALCULATE (
 			    [Invoices],
 			    fct_invoices_converted[is_missing_currency] = TRUE ()
 			)
-			```
 		formatString: #,##0
 		displayFolder: Data Quality
+		lineageTag: 3c62509d-f9e8-41db-8d81-9042967a9e7a
 
-	measure 'Invoice Amount Mismatch Count' = ```
+	measure 'Invoice Amount Mismatch Count' =
 			CALCULATE (
 			    [Invoices],
 			    fct_invoices_converted[has_amount_reconciliation_mismatch] = TRUE ()
 			)
-			```
 		formatString: #,##0
 		displayFolder: Data Quality
+		lineageTag: 0091d82a-c654-4b14-828d-0d3aab98b0ed
 
-	measure 'Invalid User Created At Count' = ```
+	measure 'Invalid User Created At Count' =
 			CALCULATE (
 			    [Users],
 			    dim_users[is_invalid_created_at] = TRUE ()
 			)
-			```
 		formatString: #,##0
 		displayFolder: Data Quality
+		lineageTag: f2b97d35-ef98-4f55-85b1-2b131351e23c
 
-	measure 'Missing User Country Count' = ```
+	measure 'Missing User Country Count' =
 			CALCULATE (
 			    [Users],
 			    dim_users[is_missing_country] = TRUE ()
 			)
-			```
 		formatString: #,##0
 		displayFolder: Data Quality
+		lineageTag: afcc5814-1544-4427-8caf-cfedf1daee70
 
-	measure 'FX Covered Eligible Invoices' = ```
+	measure 'FX Covered Eligible Invoices' =
 			CALCULATE (
 			    [Eligible Invoices],
 			    NOT ISBLANK ( fct_invoices_converted[fx_rate_to_usd] )
 			        || fct_invoices_converted[source_currency_code] = "USD"
 			)
-			```
 		formatString: #,##0
 		displayFolder: Data Quality
+		lineageTag: 28a5e2b0-cf9f-4a4c-b97b-2f2416b3a51d
 
 	measure 'FX Coverage Rate' = DIVIDE ( [FX Covered Eligible Invoices], [Eligible Invoices] )
 		formatString: 0.00%
 		displayFolder: Data Quality
+		lineageTag: 25ec15d1-d92b-4a2b-9979-b00be1129de4
 
 	column Value
 		dataType: int64
 		isHidden
+		lineageTag: a4344b17-b258-44b7-b7d9-48041c0e987c
 		summarizeBy: none
 		sourceColumn: [Value]
 
 	partition _Measures = calculated
 		mode: import
 		source = ROW ( "Value", 1 )
+

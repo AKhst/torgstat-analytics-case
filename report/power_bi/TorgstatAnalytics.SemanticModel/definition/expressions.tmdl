@@ -1,3 +1,10 @@
 expression Server = "localhost:5433" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 59cbd0de-48d4-4c46-94c2-a6791bbc194d
+
+	annotation PBI_ResultType = Text
 
 expression Database = "torgdb" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 297cf894-fee3-40ae-9f7d-81045beff551
+
+	annotation PBI_ResultType = Text
+
