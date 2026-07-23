@@ -23,11 +23,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Active Paid Workspaces"
+                  "Property": "FX Coverage Rate"
                 }
               },
-              "queryRef": "_Measures.Active Paid Workspaces",
-              "nativeQueryRef": "Active Paid Workspaces"
+              "queryRef": "_Measures.FX Coverage Rate",
+              "nativeQueryRef": "FX Coverage Rate"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "_Measures"
                   }
                 },
-                "Property": "Active Paid Workspaces"
+                "Property": "FX Coverage Rate"
               }
             },
             "direction": "Descending"

@@ -19,6 +19,7 @@ MODEL_REF_PATTERN = re.compile(r"^ref table\s+(.+)$")
 RELATIONSHIP_COLUMN_PATTERN = re.compile(
     r"^\t(?:fromColumn|toColumn):\s+([^\.]+)\.(.+)$"
 )
+MEASURE_DECLARATION_PATTERN = re.compile(r"^\tmeasure\s+(.+?)\s*=")
 
 
 def unquote_tmdl_name(value: str) -> str:
@@ -31,6 +32,46 @@ def unquote_tmdl_name(value: str) -> str:
 def load_json(path: Path) -> dict:
     with path.open(encoding="utf-8") as file_handle:
         return json.load(file_handle)
+
+
+def validate_measure_formats(
+    table_name: str, lines: list[str], errors: list[str]
+) -> None:
+    """Require one format string inside each measure block.
+
+    Column and measure properties use the same TMDL indentation. Counting every
+    ``formatString`` in a table therefore produces false failures as soon as
+    Power BI serializes formatted columns. Inspecting each measure block keeps
+    the check scoped to the object it is intended to validate.
+    """
+
+    measure_starts = [
+        index
+        for index, line in enumerate(lines)
+        if MEASURE_DECLARATION_PATTERN.match(line)
+    ]
+
+    for start in measure_starts:
+        declaration = MEASURE_DECLARATION_PATTERN.match(lines[start])
+        if declaration is None:
+            continue
+
+        end = len(lines)
+        for index in range(start + 1, len(lines)):
+            line = lines[index]
+            if line.strip() and line.startswith("\t") and not line.startswith("\t\t"):
+                end = index
+                break
+
+        format_count = sum(
+            line.startswith("\t\tformatString:") for line in lines[start + 1 : end]
+        )
+        if format_count != 1:
+            measure_name = declaration.group(1).strip()
+            errors.append(
+                f"{table_name}: measure {measure_name} must have exactly one "
+                f"formatString, found {format_count}"
+            )
 
 
 def validate_json_entry_points(errors: list[str]) -> None:
@@ -119,12 +160,7 @@ def validate_tmdl(errors: list[str]) -> None:
         if "\tpartition " not in text:
             errors.append(f"{table_file.name}: missing partition")
 
-        measure_count = sum(line.startswith("\tmeasure ") for line in lines)
-        format_count = sum(line.startswith("\t\tformatString:") for line in lines)
-        if measure_count != format_count:
-            errors.append(
-                f"{table_file.name}: every measure must have one formatString"
-            )
+        validate_measure_formats(table_file.name, lines, errors)
 
     model_refs = {
         unquote_tmdl_name(match.group(1))

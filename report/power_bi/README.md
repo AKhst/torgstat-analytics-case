@@ -31,8 +31,8 @@ The semantic model and report are authored as code. Power BI Desktop adds one PB
 The report currently contains:
 
 - `Executive Overview`: an invoice-date slicer, five KPI cards, and a monthly net-revenue line chart;
-- `QA Revenue Trace`: an invoice-level table for reconciling the revenue measure to its source rows.
-- `Data Quality Monitor`: a placeholder page currently copied from Executive Overview; its visuals still need to be replaced with quality KPIs and issue-detail tables.
+- `QA Revenue Trace`: an invoice-level table for reconciling the revenue measure to its source rows;
+- `Data Quality Monitor`: five quality KPI cards, a customer-segment slicer, monthly invoice-mismatch trend, and invoice/user detail tables with business IDs and quality flags.
 
 The Executive Overview KPI strip uses `Net Revenue USD`, `Gross Revenue USD`, `Paid Invoices`, `Payment Success Rate`, and `Active Paid Workspaces`. The first four metrics are filtered by the active invoice-date relationship. `Active Paid Workspaces` is a current full-data subscription metric and does not respond to the invoice-date slicer.
 
@@ -40,8 +40,8 @@ The next planned report work is:
 
 1. Complete the Executive Overview breakdowns by plan, customer segment, and country.
 2. Add `Revenue And Plans` and `Acquisition And Usage` pages.
-3. Build the initial `Data Quality Monitor` from the existing quality flags and measures.
-4. Design a dedicated `mart_data_quality_issues` model before treating the quality page as an operational ERP-remediation queue.
+3. Add the workspace drill-through page.
+4. Evolve the initial Data Quality Monitor into an operational workflow backed by a dedicated `mart_data_quality_issues` model.
 
 `report_blueprint.md` contains the target page layout. `semantic_model.md` documents table grain, relationships, and date behavior.
 
@@ -97,7 +97,7 @@ Avoid importing raw and staging tables into the first report. They are useful fo
 3. Open `TorgstatAnalytics.pbip`.
 4. Enter the local PostgreSQL read-only credentials when prompted.
 5. Apply changes and refresh the model.
-6. Build the pages from `report_blueprint.md` and save the project.
+6. Review the implemented pages against `report_blueprint.md`, make the intended report changes, and save the project.
 7. Review `git diff`, then commit the generated PBIR files.
 
 Power BI Desktop must be restarted after external TMDL or PBIR edits because it does not hot-reload project files.
@@ -123,7 +123,7 @@ Use `dim_date` as the shared reporting calendar. Avoid building production visua
 
 ## Data Quality Handoff
 
-The first Data Quality page can use the existing measures for missing invoice currency, invoice amount mismatch, invalid user timestamps, missing user country, duplicate event payloads, first-touch source loss, and FX coverage. Include record-level invoice and user tables with business IDs, quality flags, and `loaded_at_utc` so an issue can be traced back through marts, staging, raw tables, and the source extract.
+The initial Data Quality page uses the existing measures for missing invoice currency, invoice amount mismatch, invalid user timestamps, missing user country, and FX coverage. Its record-level invoice and user tables include business IDs and quality flags so an issue can be traced back through marts, staging, raw tables, and the source extract. Use the table flags to isolate affected records; `loaded_at_utc` remains available in the semantic model for load-level lineage.
 
 An operational remediation workflow needs more than visual counts. Before handing issues to ERP or source-system owners, add a durable issue-grain model with issue code, entity and record ID, source system, field, severity, detected timestamp, batch lineage, owner team, resolution status, and ticket ID. Power BI should monitor and route the issue; the source record should be corrected in ERP and verified by a subsequent pipeline run.
 
@@ -165,5 +165,8 @@ Before committing, check `expressions.tmdl`. Replace a personal or temporary LAN
 Validate the source-controlled project structure at any time:
 
 ```bash
-.venv/bin/python scripts/validate_power_bi_project.py
+python -m unittest discover -s tests -p "test_validate_power_bi_project.py"
+python scripts/validate_power_bi_project.py
 ```
+
+The validator scopes `formatString` checks to individual measure blocks. This is intentional: Power BI also serializes `formatString` for date and numeric columns, so counting every occurrence in a table file would incorrectly report valid column formatting as missing measure formatting. Keep the regression tests whenever the TMDL parser changes.

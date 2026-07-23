@@ -1,0 +1,188 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "b1d2c3e4f5a60718293a",
+  "position": {
+    "x": 410,
+    "y": 115,
+    "z": 7,
+    "height": 250,
+    "width": 870,
+    "tabOrder": 7
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "invoice_id"
+                }
+              },
+              "queryRef": "fct_invoices_converted.invoice_id",
+              "nativeQueryRef": "invoice_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "workspace_id"
+                }
+              },
+              "queryRef": "fct_invoices_converted.workspace_id",
+              "nativeQueryRef": "workspace_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "issued_at"
+                }
+              },
+              "queryRef": "fct_invoices_converted.issued_at",
+              "nativeQueryRef": "issued_at"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "source_currency_code"
+                }
+              },
+              "queryRef": "fct_invoices_converted.source_currency_code",
+              "nativeQueryRef": "source_currency_code"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "is_missing_currency"
+                }
+              },
+              "queryRef": "fct_invoices_converted.is_missing_currency",
+              "nativeQueryRef": "is_missing_currency"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "amount_reconciliation_difference"
+                }
+              },
+              "queryRef": "fct_invoices_converted.amount_reconciliation_difference",
+              "nativeQueryRef": "amount_reconciliation_difference"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "has_amount_reconciliation_mismatch"
+                }
+              },
+              "queryRef": "fct_invoices_converted.has_amount_reconciliation_mismatch",
+              "nativeQueryRef": "has_amount_reconciliation_mismatch"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "has_invalid_payment_lifecycle"
+                }
+              },
+              "queryRef": "fct_invoices_converted.has_invalid_payment_lifecycle",
+              "nativeQueryRef": "has_invalid_payment_lifecycle"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "is_analytics_eligible"
+                }
+              },
+              "queryRef": "fct_invoices_converted.is_analytics_eligible",
+              "nativeQueryRef": "is_analytics_eligible"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fct_invoices_converted"
+                  }
+                },
+                "Property": "issued_at"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Invoice Quality Detail'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

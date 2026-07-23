@@ -3,10 +3,10 @@
   "name": "ad9cb6008bec800669a6",
   "position": {
     "x": 0,
-    "y": 125.44,
+    "y": 115,
     "z": 6,
-    "height": 336.64,
-    "width": 1280,
+    "height": 250,
+    "width": 400,
     "tabOrder": 6
   },
   "visual": {
@@ -42,11 +42,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Net Revenue USD"
+                  "Property": "Invoice Amount Mismatch Count"
                 }
               },
-              "queryRef": "_Measures.Net Revenue USD",
-              "nativeQueryRef": "Net Revenue USD"
+              "queryRef": "_Measures.Invoice Amount Mismatch Count",
+              "nativeQueryRef": "Invoice Amount Mismatch Count"
             }
           ]
         }
@@ -142,7 +142,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Net Revenue by Month'"
+                  "Value": "'Invoice Amount Mismatches by Month'"
                 }
               }
             },

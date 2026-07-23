@@ -190,7 +190,7 @@ Accidental identifier collisions, negative invoice amounts, random first-session
 
 ## Current Limitations
 
-- The PBIP semantic model is source-controlled. Executive Overview and QA Revenue Trace are partially authored; the remaining report pages and production Data Quality workflow are still planned.
+- The current PBIP release contains an initial Executive Overview, QA Revenue Trace, and Data Quality Monitor. Revenue/Plans, Acquisition/Usage, workspace drill-through, and a production remediation workflow remain documented roadmap items.
 - Raw loading replaces tables instead of preserving append-only batch history.
 - Invoice-currency fallback to workspace default and the authoritative FX conversion date remain separate draft business decisions.
 - Recognized-revenue, MRR, and ARR marts are not implemented yet.

@@ -23,11 +23,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Net Revenue USD"
+                  "Property": "Missing Invoice Currency Count"
                 }
               },
-              "queryRef": "_Measures.Net Revenue USD",
-              "nativeQueryRef": "Net Revenue USD"
+              "queryRef": "_Measures.Missing Invoice Currency Count",
+              "nativeQueryRef": "Missing Invoice Currency Count"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "_Measures"
                   }
                 },
-                "Property": "Net Revenue USD"
+                "Property": "Missing Invoice Currency Count"
               }
             },
             "direction": "Descending"

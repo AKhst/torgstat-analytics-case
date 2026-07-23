@@ -23,11 +23,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Paid Invoices"
+                  "Property": "Invalid User Created At Count"
                 }
               },
-              "queryRef": "_Measures.Paid Invoices",
-              "nativeQueryRef": "Paid Invoices"
+              "queryRef": "_Measures.Invalid User Created At Count",
+              "nativeQueryRef": "Invalid User Created At Count"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "_Measures"
                   }
                 },
-                "Property": "Paid Invoices"
+                "Property": "Invalid User Created At Count"
               }
             },
             "direction": "Descending"

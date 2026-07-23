@@ -23,11 +23,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Gross Revenue USD"
+                  "Property": "Invoice Amount Mismatch Count"
                 }
               },
-              "queryRef": "_Measures.Gross Revenue USD",
-              "nativeQueryRef": "Gross Revenue USD"
+              "queryRef": "_Measures.Invoice Amount Mismatch Count",
+              "nativeQueryRef": "Invoice Amount Mismatch Count"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "_Measures"
                   }
                 },
-                "Property": "Gross Revenue USD"
+                "Property": "Invoice Amount Mismatch Count"
               }
             },
             "direction": "Descending"

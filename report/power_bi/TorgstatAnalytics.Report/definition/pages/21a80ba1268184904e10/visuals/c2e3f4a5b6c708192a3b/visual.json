@@ -1,0 +1,188 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "c2e3f4a5b6c708192a3b",
+  "position": {
+    "x": 0,
+    "y": 375,
+    "z": 8,
+    "height": 330,
+    "width": 1280,
+    "tabOrder": 8
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_users"
+                    }
+                  },
+                  "Property": "user_id"
+                }
+              },
+              "queryRef": "dim_users.user_id",
+              "nativeQueryRef": "user_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_users"
+                    }
+                  },
+                  "Property": "workspace_id"
+                }
+              },
+              "queryRef": "dim_users.workspace_id",
+              "nativeQueryRef": "workspace_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_users"
+                    }
+                  },
+                  "Property": "created_at"
+                }
+              },
+              "queryRef": "dim_users.created_at",
+              "nativeQueryRef": "created_at"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_users"
+                    }
+                  },
+                  "Property": "country_code"
+                }
+              },
+              "queryRef": "dim_users.country_code",
+              "nativeQueryRef": "country_code"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_users"
+                    }
+                  },
+                  "Property": "user_role"
+                }
+              },
+              "queryRef": "dim_users.user_role",
+              "nativeQueryRef": "user_role"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_users"
+                    }
+                  },
+                  "Property": "is_invalid_created_at"
+                }
+              },
+              "queryRef": "dim_users.is_invalid_created_at",
+              "nativeQueryRef": "is_invalid_created_at"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_users"
+                    }
+                  },
+                  "Property": "is_missing_country"
+                }
+              },
+              "queryRef": "dim_users.is_missing_country",
+              "nativeQueryRef": "is_missing_country"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_users"
+                    }
+                  },
+                  "Property": "has_invalid_lifecycle"
+                }
+              },
+              "queryRef": "dim_users.has_invalid_lifecycle",
+              "nativeQueryRef": "has_invalid_lifecycle"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_users"
+                    }
+                  },
+                  "Property": "loaded_at_utc"
+                }
+              },
+              "queryRef": "dim_users.loaded_at_utc",
+              "nativeQueryRef": "loaded_at_utc"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dim_users"
+                  }
+                },
+                "Property": "created_at"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'User Quality Detail'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

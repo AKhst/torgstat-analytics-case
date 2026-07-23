@@ -23,11 +23,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Payment Success Rate"
+                  "Property": "Missing User Country Count"
                 }
               },
-              "queryRef": "_Measures.Payment Success Rate",
-              "nativeQueryRef": "Payment Success Rate"
+              "queryRef": "_Measures.Missing User Country Count",
+              "nativeQueryRef": "Missing User Country Count"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "_Measures"
                   }
                 },
-                "Property": "Payment Success Rate"
+                "Property": "Missing User Country Count"
               }
             },
             "direction": "Descending"
