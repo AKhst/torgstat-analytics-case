@@ -58,15 +58,17 @@ The first report should answer four business questions:
 
 TMDL parameters default to `Server = localhost:5433` and `Database = torgdb`. Credentials are intentionally absent from Git and are stored by Power BI Desktop for the current user.
 
-If PostgreSQL runs on the Mac host while Power BI Desktop runs inside a Windows VM, do not use `localhost`: inside Windows it refers to the VM. Set the Power BI `Server` parameter to `<mac-ip>:5433`, keep `Database = torgdb`, and authenticate with `READONLY_USER` and `READONLY_PASSWORD` from the Mac `.env` file.
+If PostgreSQL runs on the Mac host while Power BI Desktop runs inside a Windows VM, do not use `localhost`: inside Windows it refers to the VM. Set the Power BI `Server` parameter to `MacBook-Pro-Aleksei.local:5433` (or another approved DNS hostname), keep `Database = torgdb`, and authenticate with `READONLY_USER` and `READONLY_PASSWORD` from the Mac `.env` file.
 
 Check connectivity before opening the project:
 
 ```powershell
-Test-NetConnection <mac-ip> -Port 5433
+Test-NetConnection MacBook-Pro-Aleksei.local -Port 5433
 ```
 
 The test must return `TcpTestSucceeded : True`. Docker, the local pipeline, and PostgreSQL remain on the Mac; only Power BI Desktop and a Git working copy are required in Windows.
+
+The day-to-day startup and troubleshooting sequence is documented in [`../../docs/daily_runbook.md`](../../docs/daily_runbook.md).
 
 There are two supported ways to obtain data after cloning the repository:
 

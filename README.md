@@ -74,6 +74,8 @@ The approved field-level contracts and business decisions are documented in `doc
 
 ## Quick Start
 
+For the normal Mac + Windows VM operating sequence, connection checks, pipeline commands, and Power BI startup, use [`docs/daily_runbook.md`](docs/daily_runbook.md).
+
 ### 1. Install dependencies
 
 ```bash
