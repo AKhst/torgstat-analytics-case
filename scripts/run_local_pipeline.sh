@@ -33,8 +33,18 @@ else
 fi
 
 .venv/bin/python scripts/import_to_postgres.py
+.venv/bin/python -m dbt.cli.main source freshness \
+  --project-dir torgstat_dbt \
+  --profiles-dir torgstat_dbt
 .venv/bin/python -m dbt.cli.main build \
   --project-dir torgstat_dbt \
   --profiles-dir torgstat_dbt
+
+docker compose exec -T postgres \
+  psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  -v raw_schema="$RAW_SCHEMA" \
+  -v staging_schema="$STAGING_SCHEMA" \
+  -v marts_schema="$MARTS_SCHEMA" \
+  < scripts/validate_end_to_end.sql
 
 .venv/bin/python scripts/validate_power_bi_project.py

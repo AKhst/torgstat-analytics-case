@@ -677,7 +677,7 @@ passwords and connection strings
 - Добавить ручной GitHub Actions deployment.
 - Хранить credentials в GitHub Secrets.
 - Сохранять артефакты dbt Docs.
-- Добавить freshness и reconciliation checks.
+- Перенести существующие local freshness и reconciliation checks в cloud CI.
 - Перейти от `DROP TABLE ... CASCADE` к контролируемой загрузке.
 
 ### Этап 4. Завершение BI
@@ -779,6 +779,7 @@ passwords and connection strings
 Дополнительные документы:
 
 - `docs/daily_runbook.md`
+- `docs/validation_runbook.md`
 - `docs/change_workflow.md`
 - `docs/data_contract.md`
 - `docs/business_rules.md`

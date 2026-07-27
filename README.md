@@ -2,7 +2,7 @@
 
 This repository is an analytics-engineering case study for a synthetic B2B subscription SaaS product. It models workspace ownership, user acquisition, subscription and plan history, invoice lifecycle, product events, multi-currency reporting, and controlled source-data defects.
 
-The central command reference, operating tactics, quality gates, and project roadmap are maintained in [`PROJECT_PLAYBOOK.md`](PROJECT_PLAYBOOK.md).
+The central command reference, operating tactics, quality gates, and project roadmap are maintained in [`PROJECT_PLAYBOOK.md`](PROJECT_PLAYBOOK.md). The layer-by-layer certification procedure and SQL-to-Power-BI reconciliation are documented in [`docs/validation_runbook.md`](docs/validation_runbook.md).
 
 ```text
 Synthetic source extracts
@@ -39,6 +39,7 @@ Power BI PBIP project: TMDL model and PBIR report
 │   ├── fetch_fx_rates.py         Historical FX-rate ingestion
 │   ├── import_to_postgres.py     Validated raw-schema loader
 │   ├── run_local_pipeline.sh     End-to-end local pipeline
+│   ├── validate_end_to_end.sql    Cross-layer counts, formulas, and reconciliations
 │   └── validate_power_bi_project.py  PBIP/TMDL structural checks
 ├── src/torgstat/                 Reusable Python package code
 ├── torgstat_dbt/                 dbt sources, staging, marts, tests, and macros
