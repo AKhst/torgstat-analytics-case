@@ -2,6 +2,8 @@
 
 This repository is an analytics-engineering case study for a synthetic B2B subscription SaaS product. It models workspace ownership, user acquisition, subscription and plan history, invoice lifecycle, product events, multi-currency reporting, and controlled source-data defects.
 
+The central command reference, operating tactics, quality gates, and project roadmap are maintained in [`PROJECT_PLAYBOOK.md`](PROJECT_PLAYBOOK.md).
+
 ```text
 Synthetic source extracts
         ↓
