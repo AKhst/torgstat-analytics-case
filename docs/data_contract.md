@@ -2,11 +2,11 @@
 
 ## Статус документа
 
-- Версия: `1.0`
-- Статус: `APPROVED`
+- Версия: `1.1`
+- Статус: `APPROVED` для core entities; `DRAFT` для `events v1` и `fx_rates v1`
 - Утверждено: `workspaces v1`, `plans v1`, `users v1`, `sessions v1`, `subscriptions v1`, `subscription_plan_history v1`, `invoices v1`
-- Текущий предмет согласования: отсутствует
-- Реализация: generator, import contract и dbt-слои реализованы; полный runtime build пройден
+- Текущий предмет согласования: `events v1`, `fx_rates v1`, invoice currency fallback и authoritative FX date
+- Реализация: generator, import contract и dbt-слои core entities реализованы; результат конкретного запуска подтверждается validation evidence, а не этим статическим документом
 
 ## Текущее состояние проекта
 
@@ -17,7 +17,10 @@
 - `invoices.csv`;
 - `events.csv`.
 
-CSV-контракт содержит собственные атрибуты компании: основную валюту, страну регистрации, сегмент и дату создания. До завершения миграции dbt текущая модель `dim_workspaces` всё ещё восстанавливает список workspace через объединение старых staging-моделей.
+CSV-контракт содержит собственные атрибуты компании: основную валюту, страну
+регистрации, сегмент и дату создания. `dim_workspaces` уже строится из
+`stg_workspaces`; прежняя реконструкция workspace через объединение других
+staging-моделей больше не является текущим состоянием.
 
 ## Сущность `workspaces`
 
@@ -76,15 +79,15 @@ WS_0001,Acme Analytics,2023-01-15,DE,mid_market,EUR,true
 
 ## Чек-лист реализации
 
-Для завершения миграции необходимо:
-
-1. `scripts/generate_data.py` — генерировать `workspaces.csv` первым. Реализовано.
-2. `scripts/import_to_postgres.py` — добавить контракт файла. Реализовано.
-3. `torgstat_dbt/models/sources.yml` — объявить `raw.workspaces`.
-4. Создать `staging.stg_workspaces`.
-5. Переписать `marts.dim_workspaces` на основе `stg_workspaces`.
-6. Добавить relationships-тесты для таблиц с `workspace_id`.
-7. Использовать `billing_currency` в правилах восстановления валюты invoice.
+1. `scripts/generate_data.py` генерирует `workspaces.csv` первым — `IMPLEMENTED`.
+2. `scripts/import_to_postgres.py` валидирует и загружает файл — `IMPLEMENTED`.
+3. `raw.workspaces` объявлен в dbt sources — `IMPLEMENTED`.
+4. `staging.stg_workspaces` создан — `IMPLEMENTED`.
+5. `marts.dim_workspaces` строится из `stg_workspaces` — `IMPLEMENTED`.
+6. Relationships-тесты для `workspace_id` добавлены — `IMPLEMENTED`.
+7. Fallback пустой invoice currency на `workspaces.billing_currency` —
+   `DRAFT`; текущая модель сохраняет флаг и исключает такую строку из
+   certified USD amount.
 
 ## Критерии утверждения `workspaces`
 
@@ -228,12 +231,14 @@ workspaces 1 ─── * subscriptions 1 ─── * invoices
 Invoice может участвовать в основном billing KPI, если:
 
 - `payment_status = paid`;
-- валюта разрешена через invoice или workspace default;
+- исходная invoice currency заполнена и для неё найден требуемый FX rate;
 - суммы не отрицательные;
 - выполняется `net_amount + tax_amount = gross_amount`;
 - billing period корректен.
 
 Непригодный invoice сохраняется в факте и отображается в Data Quality показателях.
+Fallback на `workspaces.billing_currency` остаётся целевым правилом со статусом
+`DRAFT` и в текущую analytics eligibility не входит.
 
 ## Разделение финансовых временных линий
 
@@ -387,3 +392,47 @@ Invoice сохраняет snapshot:
 
 - около 1% first sessions имеют потерянный `utm_source`;
 - нарушение `session.started_at >= user.created_at` не генерируется намеренно и считается критической ошибкой pipeline/source.
+
+## Сущность `events` — DRAFT
+
+### Бизнес-смысл и grain
+
+`Event` — один факт продуктового действия внутри workspace. Одна строка
+представляет одно occurrence; источник версии 1 не предоставляет устойчивый
+`event_id`.
+
+### Поля v1
+
+| Поле | Тип | Обязательное | Правило | Статус |
+| --- | --- | --- | --- | --- |
+| `workspace_id` | string | да | Workspace, в котором произошло действие | DRAFT |
+| `event_date` | date | да | Календарная дата события | DRAFT |
+| `event_name` | string | да | `dashboard_viewed`, `export_limit_reached` или `login` | DRAFT |
+| `properties` | JSON string | нет | Дополнительные свойства события | DRAFT |
+
+Staging создаёт технический surrogate key из payload и номера occurrence.
+Одинаковый payload в один день не следует автоматически считать бизнес-дублем:
+без source `event_id` это известное ограничение контракта. До утверждения
+event identity продуктовые показатели считаются directional usage signals, а
+не auditable transaction counts.
+
+## Сущность `fx_rates` — DRAFT
+
+### Бизнес-смысл и grain
+
+`FX rate` — курс одной валютной пары на одну календарную дату. Уникальный grain:
+`rate_date + base_currency + quote_currency`.
+
+### Поля v1
+
+| Поле | Тип | Обязательное | Правило | Статус |
+| --- | --- | --- | --- | --- |
+| `rate_date` | date | да | Дата применимости курса | DRAFT |
+| `base_currency` | string | да | Исходная валюта суммы | DRAFT |
+| `quote_currency` | string | да | Reporting currency; текущая модель использует USD | DRAFT |
+| `rate` | decimal | да | Положительный multiplicative conversion rate | DRAFT |
+
+Для production-like контракта ещё нужно утвердить provider, timezone/cut-off,
+holiday/weekend fallback, revision policy и authoritative invoice date
+(`issued_at`, `paid_at` или service date). До этого USD conversion полезна для
+учебной аналитики, но не должна описываться как бухгалтерски сертифицированная.

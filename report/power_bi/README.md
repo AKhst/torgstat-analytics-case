@@ -36,6 +36,12 @@ The report currently contains:
 
 The Executive Overview KPI strip uses `Net Revenue USD`, `Gross Revenue USD`, `Paid Invoices`, `Payment Success Rate`, and `Active Paid Workspaces`. The first four metrics are filtered by the active invoice-date relationship. `Active Paid Workspaces` is a current full-data subscription metric and does not respond to the invoice-date slicer.
 
+`Net Revenue USD` is the current technical measure name. Its precise business
+meaning is `Eligible Paid Invoice Net USD (by issue date)`: analytics-eligible,
+paid invoices converted to USD and grouped by `issued_at`. It is not cash
+collection by `paid_at` and not accounting recognized revenue. Renaming the
+measure without breaking visuals is a planned semantic-model ticket.
+
 The next planned report work is:
 
 1. Complete the Executive Overview breakdowns by plan, customer segment, and country.
@@ -49,7 +55,7 @@ The next planned report work is:
 
 The first report should answer four business questions:
 
-- How much eligible revenue did the SaaS product bill over time?
+- How much eligible paid invoice net amount was issued over time?
 - Which plans, countries, segments, and acquisition sources drive revenue?
 - Are subscriptions, sessions, and product events moving in the same direction?
 - Which controlled data-quality issues affect reporting trust?

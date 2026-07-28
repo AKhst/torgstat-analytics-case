@@ -1,0 +1,446 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Torgstat Analytics Business Case",
+    "description": "Business framing, decision value, delivery scope and training model for the synthetic B2B SaaS analytics project.",
+    "generatedAt": "2026-07-28T15:07:45+02:00",
+    "sources": [
+      {
+        "id": "source_business_case",
+        "label": "Torgstat business case",
+        "path": "docs/business_case.md",
+        "query": {
+          "description": "Canonical business framing, stakeholder map, KPI definitions and delivery scope.",
+          "language": "markdown",
+          "sql": "select priority, metric, owner, decision || ' — ' || status as decision_status from (values (1, 'Eligible Paid Invoice Net USD (by issue date)', 'Finance', 'Certify eligible invoices', 'Implemented; rename planned'), (2, 'Payment Success Rate', 'Billing Operations', 'Investigate payment failures', 'Implemented'), (3, 'Active Paid Workspaces', 'Finance / RevOps', 'Measure paid customers as-of', 'Rule/DAX revision required'), (4, 'FX Coverage Rate', 'Finance / Data', 'Gate USD reporting', 'Implemented guardrail'), (5, 'Invoice Amount Mismatch Count', 'Billing / ERP', 'Route invoice defects', 'Issue mart planned'), (6, 'MRR / ARR and recognized revenue', 'Finance', 'Separate recurring value', 'Rules approved; build planned')) as kpi_framework(priority, metric, owner, decision, status)",
+          "tables_used": [
+            "docs/business_case.md"
+          ]
+        }
+      },
+      {
+        "id": "source_training",
+        "label": "Training program",
+        "path": "docs/training_program.md",
+        "query": {
+          "description": "Eight-week work simulation, ticket backlog, acceptance criteria and evidence requirements.",
+          "language": "markdown",
+          "tables_used": [
+            "docs/training_program.md"
+          ]
+        }
+      },
+      {
+        "id": "source_data_readme",
+        "label": "Synthetic dataset contract",
+        "path": "data/README.md",
+        "query": {
+          "description": "Deterministic seed-42 entity counts and grains for the generated training data.",
+          "language": "markdown",
+          "sql": "select entity, rows, grain, domain from (values ('Product events', 5000, 'One workspace event occurrence', 'Product telemetry'), ('Users', 2500, 'One current user', 'Application database'), ('Sessions', 1297, 'One user session', 'Product telemetry'), ('Invoices', 935, 'One subscription billing-period invoice', 'Billing / ERP'), ('Plan history periods', 234, 'One subscription plan period', 'Subscription service'), ('Workspaces', 200, 'One current customer workspace', 'Application database'), ('Subscriptions', 180, 'One stable subscription lifecycle', 'Subscription service'), ('Plans', 4, 'One product plan', 'Billing / ERP')) as dataset_scale(entity, rows, grain, domain)",
+          "filters": [
+            "DATA_START 2023-01-01",
+            "DATA_END 2024-05-31"
+          ],
+          "tables_used": [
+            "data/README.md"
+          ]
+        }
+      },
+      {
+        "id": "source_business_rules",
+        "label": "Business rules",
+        "path": "docs/business_rules.md",
+        "query": {
+          "description": "Approved core and financial rules plus draft currency and FX decisions.",
+          "language": "markdown",
+          "tables_used": [
+            "docs/business_rules.md"
+          ]
+        }
+      },
+      {
+        "id": "source_report_state",
+        "label": "Power BI delivery state",
+        "path": "report/power_bi/README.md",
+        "query": {
+          "description": "Implemented and planned Power BI pages, model behavior and BI-as-code workflow.",
+          "language": "markdown",
+          "tables_used": [
+            "report/power_bi/README.md"
+          ]
+        }
+      }
+    ],
+    "charts": [
+      {
+        "id": "dataset_scale",
+        "title": "Synthetic dataset scale",
+        "subtitle": "Deterministic seed-42 entity populations, January 2023 to May 2024",
+        "intent": "comparison",
+        "question": "Is the training dataset broad enough for cross-domain analytical work?",
+        "rationale": "Horizontal bars make the intentionally different entity populations and long business labels easy to compare.",
+        "comparisonContext": {
+          "grain": "Rows per generated source entity",
+          "unit": "rows"
+        },
+        "type": "horizontalBar",
+        "dataset": "dataset_scale",
+        "sourceId": "source_data_readme",
+        "encodings": {
+          "x": {
+            "field": "entity",
+            "type": "nominal",
+            "label": "Business entity"
+          },
+          "y": {
+            "field": "rows",
+            "type": "quantitative",
+            "aggregate": "none",
+            "format": "number",
+            "label": "Rows"
+          },
+          "tooltip": [
+            {
+              "field": "domain",
+              "type": "text",
+              "label": "Logical domain"
+            },
+            {
+              "field": "grain",
+              "type": "text",
+              "label": "Grain"
+            },
+            {
+              "field": "rows",
+              "type": "quantitative",
+              "format": "number",
+              "label": "Rows"
+            }
+          ]
+        },
+        "xAxisTitle": "Generated rows",
+        "yAxisTitle": "Source entity",
+        "valueFormat": "number",
+        "layout": "full",
+        "labels": {
+          "values": "all"
+        },
+        "palette": {
+          "kind": "categorical",
+          "name": "blue"
+        },
+        "settings": {
+          "orientation": "horizontal",
+          "showValues": true,
+          "sort": "descending",
+          "categoryLabelPolicy": "wrap"
+        },
+        "surface": {
+          "surface": "export",
+          "showControls": false,
+          "viewMode": "both"
+        },
+        "maxRows": 8,
+        "emptyState": "Dataset counts are unavailable."
+      }
+    ],
+    "tables": [
+      {
+        "id": "decision_kpis",
+        "title": "Decision KPI framework",
+        "subtitle": "Metric meaning, owner, supported decision and honest delivery state",
+        "dataset": "kpi_framework",
+        "density": "dense",
+        "sourceId": "source_business_case",
+        "layout": "full",
+        "columns": [
+          {
+            "field": "metric",
+            "label": "Metric",
+            "type": "text"
+          },
+          {
+            "field": "owner",
+            "label": "Business owner",
+            "type": "text"
+          },
+          {
+            "field": "decision_status",
+            "label": "Decision and delivery status",
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# Torgstat Analytics Business Case",
+        "layout": "full"
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary\n\n- **Business outcome:** one controlled view of billing and customer scale, with traceability from KPI to source record.\n- **Operating value:** Finance can decide whether a reporting period is trustworthy; Billing Operations can route concrete invoice issues; Product and Growth can explore customer and usage drivers.\n- **Current delivery:** the data pipeline, dbt layers, semantic model, Executive Overview, QA Revenue Trace and an initial Data Quality Monitor exist; several business pages and operational controls remain planned.\n- **Critical caveat:** the technical measure `Net Revenue USD` means eligible paid invoice net amount by issue date. It is neither cash collection nor accounting recognized revenue.",
+        "layout": "full",
+        "sourceId": "source_business_case"
+      },
+      {
+        "id": "product_story",
+        "type": "markdown",
+        "body": "## One product story connects customers, billing, usage and data trust\n\nTorgstat is a fictional multi-tenant B2B SaaS analytics service. A workspace is the customer account; users work inside it, subscriptions and invoices belong to it, and product events describe its use. The source landscape simulates an application database, subscription service, Billing/ERP, product telemetry and an external FX provider. This framing creates realistic cross-domain joins without pretending that the synthetic CSV generator is a real enterprise integration.",
+        "layout": "full",
+        "sourceId": "source_business_case"
+      },
+      {
+        "id": "scale_intro",
+        "type": "markdown",
+        "body": "## The trainer is large enough to expose grain and reconciliation mistakes\n\nThe deterministic dataset is deliberately uneven: high-volume events and users coexist with much smaller customer, subscription and plan populations. That makes fan-out joins, wrong aggregation grain and misleading customer-level ratios visible during manual validation.",
+        "layout": "full",
+        "sourceId": "source_data_readme"
+      },
+      {
+        "id": "scale_chart",
+        "type": "chart",
+        "chartId": "dataset_scale",
+        "layout": "full",
+        "sourceId": "source_data_readme"
+      },
+      {
+        "id": "scale_implication",
+        "type": "markdown",
+        "body": "Events and users dominate row volume, while financial and customer decisions are made at invoice or workspace grain. The implication is operational: aggregate each fact at its intended grain before combining domains, and reconcile customer counts separately from transaction amounts.",
+        "layout": "full",
+        "sourceId": "source_data_readme"
+      },
+      {
+        "id": "decision_value",
+        "type": "markdown",
+        "body": "## Business value comes from decisions, not the number of visuals\n\nLeadership needs direction on billing and customer mix; Finance needs a release or no-release decision; Billing Operations needs affected invoice IDs; Product and Growth need directional customer and usage drivers. Each KPI below therefore has an owner, a decision and an explicit delivery status.",
+        "layout": "full",
+        "sourceId": "source_business_case"
+      },
+      {
+        "id": "decision_table",
+        "type": "table",
+        "tableId": "decision_kpis",
+        "layout": "full",
+        "sourceId": "source_business_case"
+      },
+      {
+        "id": "delivery_scope",
+        "type": "markdown",
+        "body": "## The current release is useful but not production-certified\n\n**Current:** deterministic extracts, PostgreSQL raw loading with lineage, dbt staging/marts/tests, invoice FX conversion, three Power BI pages and BI-as-code source control.\n\n**Next:** correct ambiguous DAX definitions, finish plan and segment breakdowns, add Acquisition and Usage plus workspace drill-through, create an issue-grain data-quality mart and move validation into CI.\n\n**Not claimed:** real customer data, production SLA or high availability, enterprise ERP/card-processing integration, or enterprise Power BI distribution.",
+        "layout": "full",
+        "sourceId": "source_report_state"
+      },
+      {
+        "id": "training_model",
+        "type": "markdown",
+        "body": "## An eight-week simulation turns the repository into daily work practice\n\nThe learner acts as the Analytics Engineer / BI Developer for Billing and Product Analytics. Four two-week sprints cover trust and billing, commercial and product analysis, customer operations and data quality, then release and portfolio evidence. Every ticket must include a business question, grain, acceptance criteria, SQL/dbt proof, Power BI filter checks, business-ID traceability and a reviewed Git diff.",
+        "layout": "full",
+        "sourceId": "source_training"
+      },
+      {
+        "id": "recommended_next_steps",
+        "type": "markdown",
+        "body": "## Recommended next steps\n\n1. Complete `MET-102`: specify and reconcile `Net Revenue USD`, then plan its safe rename.\n2. Correct `Canceled Subscriptions` and define `Active Paid Workspaces` with an approved as-of rule.\n3. Add plan, segment and country drivers to Executive Overview.\n4. Build `mart_data_quality_issues` so every issue has entity ID, severity, owner, status and ticket.\n5. Add CI gates only after local generator, dbt, SQL reconciliation and PBIP validation are repeatable.",
+        "layout": "full",
+        "sourceId": "source_training"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further questions\n\n- Which date and population should define an active paid workspace?\n- May a missing invoice currency be recovered from workspace currency, and what evidence makes that safe?\n- Which FX provider, cut-off and revision policy are authoritative?\n- Which DQ severities block publication versus publish with warning?\n- What operating target should be introduced after several stable reporting periods?",
+        "layout": "full",
+        "sourceId": "source_business_rules"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## Caveats and assumptions\n\nAll entity counts describe deterministic synthetic data generated with seed 42 for 1 January 2023 through 31 May 2024. Commercial targets are intentionally absent because synthetic history is not a performance baseline. Recognized-revenue and MRR/ARR rules are approved but not implemented; invoice-currency fallback and the authoritative FX date remain draft. Runtime trust still requires a successful pipeline run, dbt tests, SQL reconciliation and a refreshed Power BI model.",
+        "layout": "full",
+        "sourceId": "source_business_case"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-28T15:07:45+02:00",
+    "status": "ready",
+    "datasets": {
+      "dataset_scale": [
+        {
+          "entity": "Product events",
+          "rows": 5000,
+          "grain": "One workspace event occurrence",
+          "domain": "Product telemetry"
+        },
+        {
+          "entity": "Users",
+          "rows": 2500,
+          "grain": "One current user",
+          "domain": "Application database"
+        },
+        {
+          "entity": "Sessions",
+          "rows": 1297,
+          "grain": "One user session",
+          "domain": "Product telemetry"
+        },
+        {
+          "entity": "Invoices",
+          "rows": 935,
+          "grain": "One subscription billing-period invoice",
+          "domain": "Billing / ERP"
+        },
+        {
+          "entity": "Plan history periods",
+          "rows": 234,
+          "grain": "One subscription plan period",
+          "domain": "Subscription service"
+        },
+        {
+          "entity": "Workspaces",
+          "rows": 200,
+          "grain": "One current customer workspace",
+          "domain": "Application database"
+        },
+        {
+          "entity": "Subscriptions",
+          "rows": 180,
+          "grain": "One stable subscription lifecycle",
+          "domain": "Subscription service"
+        },
+        {
+          "entity": "Plans",
+          "rows": 4,
+          "grain": "One product plan",
+          "domain": "Billing / ERP"
+        }
+      ],
+      "kpi_framework": [
+        {
+          "priority": 1,
+          "metric": "Eligible Paid Invoice Net USD (by issue date)",
+          "owner": "Finance",
+          "decision": "Certify eligible invoices",
+          "status": "Implemented; rename planned",
+          "decision_status": "Certify eligible invoices — Implemented; rename planned"
+        },
+        {
+          "priority": 2,
+          "metric": "Payment Success Rate",
+          "owner": "Billing Operations",
+          "decision": "Investigate payment failures",
+          "status": "Implemented",
+          "decision_status": "Investigate payment failures — Implemented"
+        },
+        {
+          "priority": 3,
+          "metric": "Active Paid Workspaces",
+          "owner": "Finance / RevOps",
+          "decision": "Measure paid customers as-of",
+          "status": "Rule/DAX revision required",
+          "decision_status": "Measure paid customers as-of — Rule/DAX revision required"
+        },
+        {
+          "priority": 4,
+          "metric": "FX Coverage Rate",
+          "owner": "Finance / Data",
+          "decision": "Gate USD reporting",
+          "status": "Implemented guardrail",
+          "decision_status": "Gate USD reporting — Implemented guardrail"
+        },
+        {
+          "priority": 5,
+          "metric": "Invoice Amount Mismatch Count",
+          "owner": "Billing / ERP",
+          "decision": "Route invoice defects",
+          "status": "Issue mart planned",
+          "decision_status": "Route invoice defects — Issue mart planned"
+        },
+        {
+          "priority": 6,
+          "metric": "MRR / ARR and recognized revenue",
+          "owner": "Finance",
+          "decision": "Separate recurring value",
+          "status": "Rules approved; build planned",
+          "decision_status": "Separate recurring value — Rules approved; build planned"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "source_business_case",
+      "label": "Torgstat business case",
+      "path": "docs/business_case.md",
+      "query": {
+        "description": "Canonical business framing, stakeholder map, KPI definitions and delivery scope.",
+        "language": "markdown",
+        "sql": "select priority, metric, owner, decision || ' — ' || status as decision_status from (values (1, 'Eligible Paid Invoice Net USD (by issue date)', 'Finance', 'Certify eligible invoices', 'Implemented; rename planned'), (2, 'Payment Success Rate', 'Billing Operations', 'Investigate payment failures', 'Implemented'), (3, 'Active Paid Workspaces', 'Finance / RevOps', 'Measure paid customers as-of', 'Rule/DAX revision required'), (4, 'FX Coverage Rate', 'Finance / Data', 'Gate USD reporting', 'Implemented guardrail'), (5, 'Invoice Amount Mismatch Count', 'Billing / ERP', 'Route invoice defects', 'Issue mart planned'), (6, 'MRR / ARR and recognized revenue', 'Finance', 'Separate recurring value', 'Rules approved; build planned')) as kpi_framework(priority, metric, owner, decision, status)",
+        "tables_used": [
+          "docs/business_case.md"
+        ]
+      }
+    },
+    {
+      "id": "source_training",
+      "label": "Training program",
+      "path": "docs/training_program.md",
+      "query": {
+        "description": "Eight-week work simulation, ticket backlog, acceptance criteria and evidence requirements.",
+        "language": "markdown",
+        "tables_used": [
+          "docs/training_program.md"
+        ]
+      }
+    },
+    {
+      "id": "source_data_readme",
+      "label": "Synthetic dataset contract",
+      "path": "data/README.md",
+      "query": {
+        "description": "Deterministic seed-42 entity counts and grains for the generated training data.",
+        "language": "markdown",
+        "sql": "select entity, rows, grain, domain from (values ('Product events', 5000, 'One workspace event occurrence', 'Product telemetry'), ('Users', 2500, 'One current user', 'Application database'), ('Sessions', 1297, 'One user session', 'Product telemetry'), ('Invoices', 935, 'One subscription billing-period invoice', 'Billing / ERP'), ('Plan history periods', 234, 'One subscription plan period', 'Subscription service'), ('Workspaces', 200, 'One current customer workspace', 'Application database'), ('Subscriptions', 180, 'One stable subscription lifecycle', 'Subscription service'), ('Plans', 4, 'One product plan', 'Billing / ERP')) as dataset_scale(entity, rows, grain, domain)",
+        "filters": [
+          "DATA_START 2023-01-01",
+          "DATA_END 2024-05-31"
+        ],
+        "tables_used": [
+          "data/README.md"
+        ]
+      }
+    },
+    {
+      "id": "source_business_rules",
+      "label": "Business rules",
+      "path": "docs/business_rules.md",
+      "query": {
+        "description": "Approved core and financial rules plus draft currency and FX decisions.",
+        "language": "markdown",
+        "tables_used": [
+          "docs/business_rules.md"
+        ]
+      }
+    },
+    {
+      "id": "source_report_state",
+      "label": "Power BI delivery state",
+      "path": "report/power_bi/README.md",
+      "query": {
+        "description": "Implemented and planned Power BI pages, model behavior and BI-as-code workflow.",
+        "language": "markdown",
+        "tables_used": [
+          "report/power_bi/README.md"
+        ]
+      }
+    }
+  ]
+}

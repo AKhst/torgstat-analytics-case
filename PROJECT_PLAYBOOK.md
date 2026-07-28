@@ -778,6 +778,9 @@ passwords and connection strings
 
 Дополнительные документы:
 
+- `docs/business_case.md`
+- `docs/training_program.md`
+- `docs/templates/`
 - `docs/daily_runbook.md`
 - `docs/validation_runbook.md`
 - `docs/change_workflow.md`
