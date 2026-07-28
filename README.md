@@ -18,6 +18,51 @@ dbt dimensions, facts, and billing marts
 Power BI PBIP project: TMDL model and PBIR report
 ```
 
+## Business Scenario
+
+Torgstat is a fictional multi-tenant B2B SaaS analytics product. A customer is
+represented by a workspace; users work inside it, subscriptions and invoices
+belong to it, and product events describe its usage. Logical source domains
+simulate an application database, subscription service, Billing/ERP, product
+telemetry, and an external FX provider.
+
+The analytics product exists to give Leadership and Finance one controlled view
+of billing and customer scale, while letting Billing Operations and source
+owners trace a data-quality problem to a concrete invoice, workspace, source
+row, and load batch. The primary current financial measure is
+`Eligible Paid Invoice Net USD (by issue date)`, technically still named
+`Net Revenue USD`; it must not be presented as cash collection or accounting
+recognized revenue.
+
+The full project charter, stakeholder decisions, KPI framework, current scope,
+and portfolio wording are in [`docs/business_case.md`](docs/business_case.md).
+A self-contained introduction for a browser is available as
+[`docs/business_case_report/torgstat_business_case.html`](docs/business_case_report/torgstat_business_case.html).
+
+## Your Simulated Role
+
+You work as the Analytics Engineer / BI Developer for Billing and Product
+Analytics. A normal change starts with a ticket and metric definition, continues
+through source/raw/staging/marts and tests, and finishes with DAX reconciliation,
+Power BI UAT, Git review, and a release decision. You do not repair ERP data in
+the report: you identify affected business IDs, route them to the source owner,
+and verify the correction after the next load.
+
+The practical eight-week work simulation, realistic tickets, acceptance
+criteria, incidents, evidence, and release exercises are in
+[`docs/training_program.md`](docs/training_program.md). Reusable work-item,
+metric, incident, and release templates are in
+[`docs/templates/`](docs/templates/).
+
+## Delivery State
+
+| State | Included |
+| --- | --- |
+| Current | Deterministic extracts, PostgreSQL raw load, dbt staging/marts/tests, multi-currency invoice conversion, Executive Overview, QA Revenue Trace, initial Data Quality Monitor, PBIP/TMDL/PBIR in Git |
+| Next | Correct ambiguous DAX definitions, finish business breakdowns, add Acquisition/Usage and workspace drill-through, create an issue-grain DQ mart and CI gates |
+| Later | Training managed PostgreSQL, environment separation, scheduled orchestration, monitoring, release/rollback evidence |
+| Not claimed | Real customer data, production SLA/HA, enterprise ERP or card-processing integration, enterprise Power BI distribution |
+
 ## Technology Stack
 
 - Python 3.11+, pandas, SQLAlchemy, and psycopg2
@@ -31,7 +76,7 @@ Power BI PBIP project: TMDL model and PBIR report
 ```text
 .
 ├── data/                         Generated CSV extracts and dataset documentation
-├── docs/                         Business rules, contracts, and change workflow
+├── docs/                         Business case, training, rules, contracts, runbooks, templates
 ├── init/                         PostgreSQL first-run initialization
 ├── report/                       Version-controlled Power BI PBIP project and blueprint
 ├── scripts/

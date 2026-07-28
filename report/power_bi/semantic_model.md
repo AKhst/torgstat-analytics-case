@@ -83,4 +83,7 @@ Hide surrogate keys from report view after relationships are created. Keep busin
 - Revenue measures use `analytics_*_amount_usd` from `fct_invoices_converted`.
 - Only `is_analytics_eligible = TRUE()` invoices contribute to revenue measures.
 - Failed invoices remain visible in operational invoice measures, but not in eligible revenue measures.
-- MRR, ARR, recognized revenue, and currency fallback stay out of the first model until their business rules are approved.
+- MRR, ARR, and recognized-revenue rules are approved, but their dbt models
+  and Power BI measures are not implemented yet.
+- Invoice-currency fallback and the authoritative FX conversion date remain
+  draft decisions and therefore stay out of the certified measure.

@@ -4,6 +4,9 @@
 
 Purpose: summarize billing health and customer scale.
 
+Delivery status: `PARTIAL` — KPI cards, invoice-date slicer and monthly line
+chart are implemented; breakdowns remain planned.
+
 Visuals:
 
 - KPI cards: `Net Revenue USD`, `Gross Revenue USD`, `Paid Invoices`, `Payment Success Rate`, `Active Paid Workspaces`.
@@ -21,6 +24,8 @@ Default filters:
 
 Purpose: understand which products and billing frequencies drive revenue.
 
+Delivery status: `PLANNED`.
+
 Visuals:
 
 - Line chart: `Net Revenue USD` and `Revenue YTD USD` by month.
@@ -32,6 +37,8 @@ Visuals:
 ## Page 3: Acquisition And Usage
 
 Purpose: connect acquisition source, sessions, users, and product activity.
+
+Delivery status: `PLANNED`.
 
 Visuals:
 
@@ -49,6 +56,10 @@ Date note:
 
 Purpose: make controlled defects visible without polluting executive analysis.
 
+Delivery status: `PARTIAL` — KPI cards, mismatch trend and invoice/user detail
+tables are implemented; issue ownership and remediation state require a
+dedicated issue-grain mart.
+
 Visuals:
 
 - KPI cards: `Missing Invoice Currency Count`, `Invoice Amount Mismatch Count`, `Invalid User Created At Count`, `Missing User Country Count`, `FX Coverage Rate`.
@@ -63,6 +74,8 @@ Default filters:
 ## Page 5: Workspace Drill-Through
 
 Purpose: inspect one customer account.
+
+Delivery status: `PLANNED`.
 
 Drill-through field:
 
