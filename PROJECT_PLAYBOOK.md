@@ -24,9 +24,13 @@ Power BI report (PBIR)
 
 - Mac: Docker, PostgreSQL, Python, dbt и полный pipeline.
 - Windows VM: Power BI Desktop, VS Code и Git.
-- PostgreSQL из Windows: `MacBook-Pro-Aleksei.local:5433`.
+- PostgreSQL из Windows: `<YOUR_MAC_LOCAL_HOSTNAME>.local:5433`.
 - База: `torgdb`.
 - Power BI project: `report/power_bi/TorgstatAnalytics.pbip`.
+
+Git-репозиторий является единственным источником правды и транспортом изменений
+между Mac и Windows. Текст, SQL, TMDL и документацию не нужно переносить через
+чат, буфер обмена или отдельные файлы.
 
 ## 2. Золотой маршрут: обычный рабочий день
 
@@ -36,7 +40,8 @@ Power BI report (PBIR)
 
 ```powershell
 cd C:\Users\PBI_user\Desktop\PBI_project\torgstat-analytics-case
-Test-NetConnection MacBook-Pro-Aleksei.local -Port 5433
+$macHostName = "YOUR_MAC_LOCAL_HOSTNAME.local"
+Test-NetConnection $macHostName -Port 5433
 git pull --ff-only
 Start-Process ".\report\power_bi\TorgstatAnalytics.pbip"
 ```
@@ -52,7 +57,7 @@ TcpTestSucceeded : True
 ```text
 Home → Transform data → Edit parameters
 
-Server   = MacBook-Pro-Aleksei.local:5433
+Server   = YOUR_MAC_LOCAL_HOSTNAME.local:5433
 Database = torgdb
 
 Apply changes → Refresh
@@ -65,6 +70,118 @@ Authentication method = Database
 Username = READONLY_USER из Mac .env
 Password = READONLY_PASSWORD из Mac .env
 ```
+
+## 2.1. Работа между Mac и Windows без копирования
+
+Разделение работы:
+
+| Среда | Основная работа |
+| --- | --- |
+| Mac | business rules, metric specs, Python, generator/importer, dbt, SQL reconciliation, PBIP static validator |
+| Windows VM | Power BI Refresh, DAX Query View, визуалы, interactions, ручной SQL ↔ DAX ↔ visual UAT |
+| Git feature branch | Передача кода, документации и evidence между машинами |
+
+Power BI Desktop установлен и используется только в Windows VM; в Mac-среде его
+нет. PostgreSQL и pipeline работают на Mac через repository default
+`localhost:5433`. Обозначение
+`<YOUR_MAC_LOCAL_HOSTNAME>.local:5433` в документации нужно только для общего
+понимания подключения Windows VM к Mac и не является project configuration.
+
+Одновременно не редактировать одни и те же файлы на обеих машинах. Перед
+переходом на другую машину завершить логический шаг, просмотреть diff, сделать
+commit в feature branch и push.
+
+### Передать контекст Codex на Mac
+
+После получения ветки не копировать историю чата. В начале новой сессии Codex на
+Mac дать короткую команду:
+
+```text
+Прочитай PROJECT_PLAYBOOK.md и summary.md.
+Проверь текущую ветку и git status.
+Продолжай с раздела Next Step в summary.md.
+Power BI Desktop доступен только в Windows VM.
+На Mac выполняй business rules, dbt, PostgreSQL, SQL reconciliation,
+документацию и статическую работу с PBIP-кодом.
+Не реализуй решения, перечисленные как unapproved или blocked.
+Сначала покажи планируемый scope и git diff.
+```
+
+`PROJECT_PLAYBOOK.md` хранит долгосрочные правила и стратегию, а `summary.md` —
+текущий handoff: выполненное, следующий шаг, блокеры и границы активной ветки.
+
+### Передать текущую ветку с Windows на Mac
+
+На Windows, после просмотра `git diff`:
+
+```powershell
+git status --short --branch
+git add <только-проверенные-файлы>
+git diff --cached
+git commit -m "Describe the completed logical change"
+git push -u origin fix/pbi-core-metrics
+```
+
+На Mac при первом получении ветки:
+
+```bash
+cd /path/to/torgstat-analytics-case
+git fetch origin
+git switch -c fix/pbi-core-metrics --track origin/fix/pbi-core-metrics
+```
+
+Если локальная ветка на Mac уже существует:
+
+```bash
+cd /path/to/torgstat-analytics-case
+git switch fix/pbi-core-metrics
+git pull --ff-only
+```
+
+### Вернуть проверенные изменения с Mac в Windows
+
+На Mac:
+
+```bash
+git status --short --branch
+git diff
+git add <только-проверенные-файлы>
+git diff --cached
+git commit -m "Describe the completed logical change"
+git push
+```
+
+На Windows сначала полностью закрыть Power BI, затем:
+
+```powershell
+cd C:\Users\PBI_user\Desktop\PBI_project\torgstat-analytics-case
+git switch fix/pbi-core-metrics
+git pull --ff-only
+Start-Process ".\report\power_bi\TorgstatAnalytics.pbip"
+```
+
+Личный Windows-параметр `Server = <YOUR_MAC_LOCAL_HOSTNAME>.local:5433`
+сохранён только в локальной рабочей копии `expressions.tmdl` с флагом
+`skip-worktree`. Этот флаг не передаётся через Git. На Mac остаётся repository
+default `localhost:5433`.
+
+Проверка локального флага в Windows:
+
+```powershell
+git ls-files -v -- `
+  "report/power_bi/TorgstatAnalytics.SemanticModel/definition/expressions.tmdl"
+```
+
+Ожидаемый префикс — `S`. Перед намеренным общим изменением параметров снять
+локальный флаг:
+
+```powershell
+git update-index --no-skip-worktree -- `
+  "report/power_bi/TorgstatAnalytics.SemanticModel/definition/expressions.tmdl"
+```
+
+`skip-worktree` — временная локальная защита от случайного commit, а не способ
+управления production-конфигурацией.
 
 ## 3. Как понять, что запускать
 
@@ -452,8 +569,11 @@ git diff --cached
 
 ```powershell
 git commit -m "Describe the business change"
-git push origin main
+git push -u origin <feature-branch>
 ```
+
+После push открыть Pull Request. Не отправлять незавершённую работу напрямую в
+`main`.
 
 ### Если случайно выполнен `git add .`
 
@@ -635,6 +755,63 @@ passwords and connection strings
 
 ## 15. Стратегия развития проекта
 
+### Утверждённый текущий план: Core Metrics Certification
+
+Текущая ветка:
+
+```text
+fix/pbi-core-metrics
+```
+
+Цель ветки — не накопить как можно больше изменений, а получить небольшой
+проверяемый набор исправлений и evidence перед дальнейшим строительством
+дашбордов.
+
+В scope текущей ветки:
+
+1. Исправить доказанный bug `canceled` → `cancelled` в мере
+   `Canceled Subscriptions`.
+2. Сделать краткосрочный DQ drill-down: таблица invoice mismatch должна иметь
+   visual-level filter
+   `has_amount_reconciliation_mismatch = TRUE`, необходимые суммы и проверенные
+   visual interactions.
+3. Зафиксировать точный смысл текущей меры `Net Revenue USD`:
+   `Eligible Paid Invoice Net USD (by issue date)`.
+4. Не реализовывать `Paid/Open Revenue` новыми DAX-фильтрами до утверждения
+   отдельных definitions для billed amount, open receivable, cash collected и
+   recognized revenue.
+5. Зафиксировать, что текущий `Active Paid Workspaces` не доказывает non-Free
+   plan и не реализует historical as-of.
+6. Выполнить ручную сверку PostgreSQL → dbt mart → DAX → Power BI visual и trace
+   минимум одного корректного invoice и одной DQ-записи.
+7. Сохранить validation evidence и проверить staged diff перед commit.
+
+Не входит в текущую ветку без отдельного утверждённого metric/data contract:
+
+- новая модель billed/open/cash/recognized revenue;
+- historical `Active Paid Workspaces as of selected date`;
+- новая история subscription statuses или snapshot mart;
+- production `mart_data_quality_issues`;
+- AI-функции;
+- managed PostgreSQL и cloud deployment.
+
+Если реализация выходит за этот scope, создать отдельный ticket и branch:
+
+```text
+feat/revenue-metric-model
+feat/active-paid-workspaces-as-of
+feat/data-quality-issue-mart
+```
+
+Рекомендуемые логические commits текущей ветки:
+
+```text
+fix(power-bi): align cancelled subscription status
+fix(power-bi): filter invoice quality details to mismatches
+docs(metrics): clarify revenue and paid workspace definitions
+docs(validation): record SQL-to-DAX reconciliation
+```
+
 ### Этап 0. Стабилизация локального проекта
 
 Цель: получать повторяемый чистый результат.
@@ -719,26 +896,40 @@ passwords and connection strings
 
 Приоритет P0:
 
-1. Усилить `validate_power_bi_project.py`.
-2. Добавить CI workflow.
-3. Сделать invoice mismatch table предфильтрованной.
-4. Проверить visual interactions.
-5. Убрать неинформативные detail tables.
+1. `BUG-301`: исправить `Canceled Subscriptions` с `canceled` на `cancelled`.
+2. `DQ-202`: предфильтровать invoice mismatch table значением `TRUE`, добавить
+   необходимые business fields и проверить interactions.
+3. `MET-102`: оформить точное определение
+   `Eligible Paid Invoice Net USD (by issue date)` и явно отделить его от cash
+   collection и recognized revenue.
+4. `MET-303`: зафиксировать варианты и ограничения `Active Paid Workspaces`; не
+   реализовывать historical as-of без истории statuses/snapshot rule.
+5. `QA-103`: выполнить no-filter и control-slice SQL ↔ DAX reconciliation.
+6. Проследить business ID для корректного invoice и DQ invoice до staging/raw
+   source row.
+7. Сохранить validation evidence и подготовить reviewable commits.
 
 Приоритет P1:
 
-1. Создать `mart_data_quality_issues`.
-2. Завершить Executive Overview.
-3. Создать Revenue and Plans.
-4. Создать Acquisition and Usage.
-5. Создать Workspace Drill-Through.
+1. После утверждения definitions создать отдельный
+   `feat/revenue-metric-model`.
+2. После утверждения as-of/source history создать отдельный
+   `feat/active-paid-workspaces-as-of`.
+3. Завершить Executive Overview на сертифицированных core metrics.
+4. Создать Revenue and Plans.
+5. Создать Acquisition and Usage.
+6. Создать Workspace Drill-Through.
+7. Создать `mart_data_quality_issues` отдельной веткой.
 
 Приоритет P2:
 
-1. Перенести PostgreSQL в managed service.
-2. Добавить TLS/cloud config.
-3. Перенести pipeline в ручной GitHub Actions workflow.
-4. Добавить monitoring, backups и deployment documentation.
+1. Усилить `validate_power_bi_project.py`.
+2. Добавить CI workflow и secret/connection checks.
+3. Перенести PostgreSQL в managed service после стабилизации локального
+   pipeline.
+4. Добавить TLS/cloud config.
+5. Перенести pipeline в ручной GitHub Actions workflow.
+6. Добавить monitoring, backups и deployment documentation.
 
 ## 17. Как рассказывать о проекте
 

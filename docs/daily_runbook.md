@@ -4,7 +4,7 @@
 
 - **Mac:** Docker, PostgreSQL, Python, генерация данных и dbt.
 - **Windows VM:** Power BI Desktop, VS Code и рабочая копия Git.
-- **Адрес PostgreSQL из Windows:** `MacBook-Pro-Aleksei.local:5433`.
+- **Адрес PostgreSQL из Windows:** `<YOUR_MAC_LOCAL_HOSTNAME>.local:5433`.
 - **База:** `torgdb`.
 
 После обычного перезапуска Windows VM полный pipeline запускать не нужно. Если PostgreSQL на Mac уже работает, достаточно проверить порт и открыть PBIP.
@@ -15,7 +15,8 @@
 
 ```powershell
 cd C:\Users\PBI_user\Desktop\PBI_project\torgstat-analytics-case
-Test-NetConnection MacBook-Pro-Aleksei.local -Port 5433
+$macHostName = "YOUR_MAC_LOCAL_HOSTNAME.local"
+Test-NetConnection $macHostName -Port 5433
 git pull --ff-only
 Start-Process ".\report\power_bi\TorgstatAnalytics.pbip"
 ```
@@ -29,7 +30,7 @@ TcpTestSucceeded : True
 После открытия Power BI:
 
 1. Если требуется, откройте `Home → Transform data → Edit parameters`.
-2. Установите `Server = MacBook-Pro-Aleksei.local:5433`.
+2. Установите `Server = YOUR_MAC_LOCAL_HOSTNAME.local:5433`.
 3. Оставьте `Database = torgdb`.
 4. Используйте `READONLY_USER` и `READONLY_PASSWORD` из Mac `.env`.
 5. Выполните `Apply changes → Refresh`.
@@ -51,7 +52,8 @@ nc -vz localhost 5433
 После этого снова в Windows:
 
 ```powershell
-Test-NetConnection MacBook-Pro-Aleksei.local -Port 5433
+$macHostName = "YOUR_MAC_LOCAL_HOSTNAME.local"
+Test-NetConnection $macHostName -Port 5433
 ```
 
 Диагностика контейнера на Mac:

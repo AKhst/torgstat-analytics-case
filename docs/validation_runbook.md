@@ -165,7 +165,8 @@ build зелёный, но корректная по SQL модель случа
 
 ```powershell
 cd C:\Users\PBI_user\Desktop\PBI_project\torgstat-analytics-case
-Test-NetConnection MacBook-Pro-Aleksei.local -Port 5433
+$macHostName = "YOUR_MAC_LOCAL_HOSTNAME.local"
+Test-NetConnection $macHostName -Port 5433
 Start-Process ".\report\power_bi\TorgstatAnalytics.pbip"
 ```
 
@@ -178,7 +179,7 @@ TcpTestSucceeded : True
 В Power BI:
 
 1. Проверьте параметр
-   `Server = MacBook-Pro-Aleksei.local:5433`.
+   `Server = YOUR_MAC_LOCAL_HOSTNAME.local:5433`.
 2. Выполните `Home → Refresh`.
 3. Очистите все slicers и filters.
 4. Сравните KPI-карточки с блоком
