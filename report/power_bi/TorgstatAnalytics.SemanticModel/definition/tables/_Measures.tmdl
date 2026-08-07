@@ -118,7 +118,7 @@ table _Measures
 	measure 'Canceled Subscriptions' =
 			CALCULATE (
 			    [Subscriptions],
-			    fct_subscriptions[subscription_status] = "canceled"
+			    fct_subscriptions[subscription_status] = "cancelled"
 			)
 		formatString: #,##0
 		displayFolder: Subscriptions
@@ -292,4 +292,3 @@ table _Measures
 	partition _Measures = calculated
 		mode: import
 		source = ROW ( "Value", 1 )
-

@@ -1,6 +1,6 @@
 # Summary — SaaS Analytics Case v1
 
-## Current Handoff Status — 2026-07-30
+## Current Handoff Status — 2026-08-04
 
 - Current branch: `fix/pbi-core-metrics`.
 - Branch base: merged documentation PR #1 at `0f83012`.
@@ -29,6 +29,15 @@
   audit.
 - A clean feature branch `fix/pbi-core-metrics` was created for the next
   controlled change set.
+- On Mac, `./scripts/run_local_pipeline.sh --skip-fx` refreshed the stale raw
+  batch and completed with `PASS=427`, SQL audit `PASS` and a valid static PBIP
+  structure.
+- Mac SQL evidence, control slices and source-row traces for eligible invoice
+  `10001` and mismatch invoice `10062` are recorded in
+  `docs/evidence/QA-103_core_metrics_certification.md`.
+- The approved `Canceled Subscriptions` predicate was corrected from `canceled`
+  to the contract value `cancelled`. Runtime DAX and visual confirmation remain
+  pending in Windows.
 
 ## Approved Current Scope
 
@@ -100,17 +109,16 @@ feature.
 
 ## Next Step
 
-1. Review the diff for `PROJECT_PLAYBOOK.md` and `summary.md`.
-2. Commit and push this documentation checkpoint to
-   `fix/pbi-core-metrics`.
-3. On Mac fetch/switch to the same branch instead of copying chat text.
-4. On Mac run or verify the existing PostgreSQL/dbt/SQL baseline and capture the
-   reconciliation output.
-5. Implement and validate the unambiguous `cancelled` bug.
-6. Return the branch to Windows through Git for Power BI Refresh, DAX Query View,
-   DQ visual filter and interaction UAT.
-7. Commit only the reviewed functional PBIP/TMDL/PBIR changes and validation
-   evidence.
+1. Review the Mac diff and static validation output.
+2. Commit and push the Mac checkpoint to `fix/pbi-core-metrics`.
+3. In Windows close Power BI Desktop, pull the branch and refresh the model.
+4. Confirm `Canceled Subscriptions = 36` in DAX Query View and the report.
+5. Reconcile no-filter and control-slice DAX/visual values against
+   `docs/evidence/QA-103_core_metrics_certification.md`.
+6. Add the approved invoice mismatch visual-level `TRUE` filter and verify
+   chart-to-detail interactions in Power BI Desktop.
+7. Update the evidence with Windows UAT results, review the PBIP/PBIR diff, then
+   commit and push only the intended changes.
 
 ## Current Blockers and Unapproved Decisions
 
@@ -120,8 +128,8 @@ feature.
   as-of rule and adequate status history or snapshot design.
 - Invoice currency fallback and authoritative FX date remain draft business
   rules.
-- Live SQL ↔ DAX totals and record-level trace evidence have not yet been
-  recorded for the current branch.
+- Mac SQL totals and record-level trace evidence are recorded, but live DAX and
+  Power BI visual reconciliation is still pending in Windows.
 - Dashboard MVP is not complete: Executive Overview and Data Quality Monitor are
   partial, and the planned Revenue and Plans, Acquisition and Usage, and
   Workspace Drill-Through pages are not implemented.
