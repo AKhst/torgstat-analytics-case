@@ -9,7 +9,12 @@ models:
       - {name: workspace_id, data_type: text, data_tests: [not_null, unique]}
       - {name: workspace_name, data_type: text, data_tests: [not_null]}
       - {name: created_at, data_type: date, data_tests: [not_null]}
-      - {name: country_code, data_type: text, data_tests: [not_null]}
+      - name: country_code
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: "ref('dim_countries')", field: country_code}
       - name: customer_segment
         data_type: text
         data_tests:
@@ -57,7 +62,11 @@ models:
           - relationships:
               arguments: {to: "ref('stg_workspaces')", field: workspace_id}
       - {name: created_at, data_type: "timestamp without time zone"}
-      - {name: country_code, data_type: text}
+      - name: country_code
+        data_type: text
+        data_tests:
+          - relationships:
+              arguments: {to: "ref('dim_countries')", field: country_code}
       - name: user_role
         data_type: text
         data_tests:

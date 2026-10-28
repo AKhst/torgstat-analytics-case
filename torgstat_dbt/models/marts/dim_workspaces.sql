@@ -40,6 +40,7 @@ select
     workspaces.workspace_name,
     workspaces.created_at,
     workspaces.country_code,
+    countries.country_name_en as workspace_country_name,
     workspaces.customer_segment,
     workspaces.billing_currency,
     workspaces.is_active,
@@ -54,6 +55,7 @@ select
     owner_sessions.utm_medium as acquisition_medium,
     workspaces.loaded_at_utc
 from {{ ref('stg_workspaces') }} as workspaces
+left join {{ ref('dim_countries') }} as countries using (country_code)
 left join user_metrics using (workspace_id)
 left join subscription_metrics using (workspace_id)
 left join owner_sessions

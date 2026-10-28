@@ -45,6 +45,15 @@ table dim_workspaces
 
 		annotation SummarizationSetBy = Automatic
 
+	column workspace_country_name
+		dataType: string
+		lineageTag: 3fcd5dce-029e-402d-97c3-40e517e56280
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: workspace_country_name
+
+		annotation SummarizationSetBy = Automatic
+
 	column customer_segment
 		dataType: string
 		lineageTag: dd3b5b9d-e24f-401c-91ef-92cd060af4f4

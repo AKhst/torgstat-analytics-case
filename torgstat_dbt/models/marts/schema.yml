@@ -1,6 +1,13 @@
 version: 2
 
 models:
+  - name: dim_countries
+    description: Conformed country reference with ISO code and English display name.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: country_code, data_type: text, data_tests: [not_null, unique]}
+      - {name: country_name_en, data_type: text, data_tests: [not_null, unique]}
+
   - name: dim_date
     description: Conformed calendar dimension for Power BI date filtering and time-series visuals.
     config: {contract: {enforced: true}}
@@ -29,6 +36,7 @@ models:
       - {name: workspace_name, data_type: text, data_tests: [not_null]}
       - {name: created_at, data_type: date, data_tests: [not_null]}
       - {name: country_code, data_type: text, data_tests: [not_null]}
+      - {name: workspace_country_name, data_type: text, data_tests: [not_null]}
       - {name: customer_segment, data_type: text, data_tests: [not_null]}
       - {name: billing_currency, data_type: text, data_tests: [not_null]}
       - {name: is_active, data_type: boolean, data_tests: [not_null]}
@@ -57,6 +65,7 @@ models:
       - {name: workspace_id, data_type: text, data_tests: [not_null]}
       - {name: created_at, data_type: "timestamp without time zone"}
       - {name: country_code, data_type: text}
+      - {name: user_country_name, data_type: text}
       - {name: user_role, data_type: text, data_tests: [not_null]}
       - {name: signup_type, data_type: text, data_tests: [not_null]}
       - {name: has_gdpr_consent, data_type: boolean, data_tests: [not_null]}

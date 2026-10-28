@@ -1,0 +1,16 @@
+version: 2
+
+seeds:
+  - name: country_reference
+    description: Approved ISO 3166-1 alpha-2 country-code reference used for presentation labels.
+    config:
+      column_types:
+        country_code: text
+        country_name_en: text
+    columns:
+      - name: country_code
+        description: ISO 3166-1 alpha-2 country code.
+        data_tests: [not_null, unique]
+      - name: country_name_en
+        description: English display name for the country.
+        data_tests: [not_null, unique]

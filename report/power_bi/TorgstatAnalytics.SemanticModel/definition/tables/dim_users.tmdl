@@ -51,6 +51,15 @@ table dim_users
 
 		annotation SummarizationSetBy = Automatic
 
+	column user_country_name
+		dataType: string
+		lineageTag: 5895e674-09be-49fe-a95b-8d14bdcc1968
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: user_country_name
+
+		annotation SummarizationSetBy = Automatic
+
 	column user_role
 		dataType: string
 		lineageTag: 98fbbc34-6bbf-4bba-9fd3-509c1a277e82

@@ -30,3 +30,7 @@ models:
       +schema: "{{ env_var('MARTS_SCHEMA', 'marts') }}"
       +tags: ['marts']
       +post-hook: "{{ grant_select_to_readonly() }}"
+
+seeds:
+  torgstat_dbt:
+    +schema: "{{ env_var('STAGING_SCHEMA', 'staging') }}"

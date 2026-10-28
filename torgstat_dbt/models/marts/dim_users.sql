@@ -5,6 +5,7 @@ select
     users.workspace_id,
     users.created_at,
     users.country_code,
+    countries.country_name_en as user_country_name,
     users.user_role,
     users.signup_type,
     users.has_gdpr_consent,
@@ -16,3 +17,5 @@ select
     users.loaded_at_utc
 from {{ ref('stg_users') }} as users
 inner join {{ ref('stg_workspaces') }} as workspaces using (workspace_id)
+left join {{ ref('dim_countries') }} as countries
+    on countries.country_code = users.country_code
