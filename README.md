@@ -124,6 +124,49 @@ The approved field-level contracts and business decisions are documented in `doc
 
 For the normal Mac + Windows VM operating sequence, connection checks, pipeline commands, and Power BI startup, use [`docs/daily_runbook.md`](docs/daily_runbook.md).
 
+### Gemini Chat-to-Data agent
+
+The repository includes a small interactive Gemini agent in
+[`scripts/gemini_data_agent.py`](scripts/gemini_data_agent.py). It demonstrates
+manual Function Calling: Gemini selects `get_sales_metrics`, the Python code
+reads the verified PostgreSQL marts, and the tool result is returned to Gemini
+for a final analytical answer.
+
+Install the optional agent dependencies and configure the API key:
+
+```bash
+pip install -r requirements-agent.txt
+export GEMINI_API_KEY="your-new-api-key"
+# Override only if the model is available for your Gemini API project.
+export GEMINI_MODEL="gemini-3.8-flash"
+```
+
+Если в окружении задан `ALL_PROXY=socks5h://...`, а `socksio` не установлен,
+запустите через доступный HTTP-прокси:
+
+```bash
+unset ALL_PROXY all_proxy
+```
+
+Агент подключается к PostgreSQL только ролью `READONLY_USER`, выполняет
+фиксированный агрегатный запрос к `marts` и передаёт Gemini только его результат.
+Вопрос пользователя и агрегированный результат уходят в Gemini API; API-ключ не
+сохраняется в базе проекта. Не выводите ключ в командной строке и не коммитьте
+файл `.env`.
+
+Run a one-off question:
+
+```bash
+.venv/bin/python scripts/gemini_data_agent.py "Какая сумма продаж по плану Pro за 2023-06?"
+```
+
+Without a question argument, the script starts an interactive prompt. The
+default source is `marts.fct_invoices_converted` joined with `marts.dim_plans`;
+it includes only analytics-eligible invoices and uses the mart's
+`analytics_net_amount_usd` FX conversion. `category` means plan name, and
+`period` means the invoice `issued_at` period. The CSV path remains available
+only for explicit debugging with `--source csv`.
+
 ### 1. Install dependencies
 
 ```bash

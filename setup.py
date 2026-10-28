@@ -34,4 +34,10 @@ setup(
         "psycopg2-binary",
         "pandas",
     ],
+    extras_require={
+        "agent": [
+            "google-genai>=1.0,<2.0",
+            "httpx[socks]>=0.28.1,<0.29",
+        ],
+    },
 )
