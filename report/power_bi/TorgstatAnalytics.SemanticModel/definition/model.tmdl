@@ -11,7 +11,7 @@ annotation PBI_QueryOrder = ["dim_date","dim_workspaces","dim_users","dim_plans"
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBI_ProTooling = ["DevMode"]
+annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
 
 ref table dim_date
 ref table dim_workspaces

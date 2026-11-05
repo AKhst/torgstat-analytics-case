@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "ad9cb6008bec800669a6",
   "position": {
     "x": 0,
     "y": 115,
-    "z": 6,
+    "z": 6000,
     "height": 250,
     "width": 400,
-    "tabOrder": 6
+    "tabOrder": 6000
   },
   "visual": {
     "visualType": "lineChart",
@@ -28,6 +28,21 @@
               },
               "queryRef": "dim_date.year_month",
               "nativeQueryRef": "year_month",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_invoices_converted"
+                    }
+                  },
+                  "Property": "has_amount_reconciliation_mismatch"
+                }
+              },
+              "queryRef": "fct_invoices_converted.has_amount_reconciliation_mismatch",
+              "nativeQueryRef": "has_amount_reconciliation_mismatch",
               "active": true
             }
           ]
@@ -169,5 +184,78 @@
         }
       ]
     }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b2855fe40191eb67bcb5",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fct_invoices_converted"
+              }
+            },
+            "Property": "has_amount_reconciliation_mismatch"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "f",
+              "Entity": "fct_invoices_converted",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "f"
+                          }
+                        },
+                        "Property": "has_amount_reconciliation_mismatch"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "isHiddenInViewMode": true,
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "requireSingleSelect": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
   }
 }
